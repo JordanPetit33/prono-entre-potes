@@ -1,5 +1,7 @@
 import { Component, effect, ElementRef, input, output, viewChild } from '@angular/core';
 
+let nextId = 0;
+
 /** Demande de confirmation, basée sur l'élément <dialog> natif. Le parent l'ouvre et la ferme avec `open`. */
 @Component({
   selector: 'app-confirm-dialog',
@@ -13,6 +15,9 @@ export class ConfirmDialog {
 
   readonly confirmed = output<void>();
   readonly cancelled = output<void>();
+
+  /** Identifiant unique : plusieurs boîtes peuvent coexister sur une page. */
+  protected readonly messageId = `confirm-dialog-message-${nextId++}`;
 
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
 

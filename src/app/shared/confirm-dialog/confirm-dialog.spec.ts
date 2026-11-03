@@ -74,6 +74,18 @@ describe('ConfirmDialog', () => {
     expect(fixture.componentInstance.events).toEqual(['annulé']);
   });
 
+  it('relie le message à la boîte par un identifiant unique', async () => {
+    const other = TestBed.createComponent(Host);
+    await other.whenStable();
+    const ids = [fixture, other].map((f) => {
+      const d = f.nativeElement.querySelector('dialog') as HTMLDialogElement;
+      const id = d.getAttribute('aria-labelledby')!;
+      expect(d.querySelector(`#${id}`)?.textContent).toContain('Supprimer Karim ?');
+      return id;
+    });
+    expect(ids[0]).not.toBe(ids[1]);
+  });
+
   it('se referme quand open repasse à false', async () => {
     await openDialog();
     fixture.componentInstance.open.set(false);

@@ -6,13 +6,17 @@ import { timeUntil } from '../../core/time/time-until';
 import { isMatchLocked } from '../../core/validation/lock';
 import { parseScore } from '../../core/validation/score';
 
-/** `input` : à saisir (ou en modification), `saved` : prono enregistré, `locked` : verrouillé. */
-type CardMode = 'input' | 'saved' | 'locked';
+/**
+ * `input` : à saisir (ou en modification), `saved` : prono enregistré,
+ * `locked` : verrouillé sans résultat, `finished` : résultat saisi.
+ */
+type CardMode = 'input' | 'saved' | 'locked' | 'finished';
 
 const STATUS_LABELS: Record<CardMode, string> = {
   input: 'À saisir',
   saved: 'Prono enregistré',
   locked: 'Verrouillé',
+  finished: 'Terminé',
 };
 
 /** Carte d'un match dans l'écran Journée : pronostic du joueur actif (F-30 à F-35). */
@@ -38,6 +42,7 @@ export class MatchCard {
   protected readonly error = signal<string | null>(null);
 
   protected readonly mode = computed<CardMode>(() => {
+    if (this.result()) return 'finished';
     if (isMatchLocked(this.match(), this.result(), this.now())) return 'locked';
     if (this.prediction() && !this.editing()) return 'saved';
     return 'input';
@@ -45,7 +50,9 @@ export class MatchCard {
   protected readonly statusLabel = computed(() => STATUS_LABELS[this.mode()]);
   protected readonly kickoff = computed(() => formatKickoff(this.match().kickoff));
   protected readonly remaining = computed(() =>
-    this.mode() === 'locked' ? null : timeUntil(this.now(), new Date(this.match().kickoff)),
+    this.mode() === 'input' || this.mode() === 'saved'
+      ? timeUntil(this.now(), new Date(this.match().kickoff))
+      : null,
   );
 
   protected save(event: Event): void {

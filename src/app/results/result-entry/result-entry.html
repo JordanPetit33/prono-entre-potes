@@ -1,0 +1,74 @@
+@if (mode() === 'view') {
+  <div class="entry">
+    <div class="final">
+      <span class="label">Résultat</span>
+      <span class="score" data-testid="result">
+        <span class="box">{{ result()?.score?.home }}</span>
+        <span class="separator">–</span>
+        <span class="box">{{ result()?.score?.away }}</span>
+      </span>
+    </div>
+    <div class="actions">
+      <button type="button" class="secondary" [disabled]="readOnly()" (click)="startCorrection()">Corriger</button>
+      <button type="button" class="secondary danger-text" [disabled]="readOnly()" (click)="pending.set('delete')">
+        Supprimer le résultat
+      </button>
+    </div>
+  </div>
+} @else {
+  <form class="entry" (submit)="submit($event)" novalidate>
+    <div class="final">
+      <span class="label">Résultat</span>
+      <span class="score">
+        <label class="sr-only" [for]="'result-home-' + match().id">Buts de {{ match().homeTeam }}</label>
+        <input
+          [id]="'result-home-' + match().id"
+          class="box"
+          type="text"
+          inputmode="numeric"
+          maxlength="2"
+          autocomplete="off"
+          placeholder="–"
+          [value]="home()"
+          [disabled]="readOnly()"
+          (input)="home.set(valueOf($event))"
+          [attr.aria-invalid]="error() ? 'true' : null"
+          [attr.aria-describedby]="error() ? 'result-error-' + match().id : null"
+        />
+        <span class="separator">–</span>
+        <label class="sr-only" [for]="'result-away-' + match().id">Buts de {{ match().awayTeam }}</label>
+        <input
+          [id]="'result-away-' + match().id"
+          class="box"
+          type="text"
+          inputmode="numeric"
+          maxlength="2"
+          autocomplete="off"
+          placeholder="–"
+          [value]="away()"
+          [disabled]="readOnly()"
+          (input)="away.set(valueOf($event))"
+          [attr.aria-invalid]="error() ? 'true' : null"
+          [attr.aria-describedby]="error() ? 'result-error-' + match().id : null"
+        />
+      </span>
+    </div>
+    <div class="actions">
+      <button type="submit" class="primary" [disabled]="readOnly()">Enregistrer le résultat</button>
+      @if (correcting()) {
+        <button type="button" class="secondary" (click)="cancelCorrection()">Annuler</button>
+      }
+    </div>
+    @if (error(); as message) {
+      <p [id]="'result-error-' + match().id" class="error" role="alert">{{ message }}</p>
+    }
+  </form>
+}
+
+<app-confirm-dialog
+  [open]="pending() !== null"
+  [message]="confirmMessage()"
+  [confirmLabel]="pending() === 'delete' ? 'Supprimer' : 'Enregistrer quand même'"
+  (confirmed)="confirm()"
+  (cancelled)="pending.set(null)"
+/>

@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { AppData, createEmptyAppData, Id, Match, Player, Prediction, Score } from '../models/app-data';
+import { AppData, createEmptyAppData, Id, Match, Player, Prediction, Result, Score } from '../models/app-data';
 import { matchdayNumbers } from '../scoring/matches';
 import { LoadResult, SaveError, StorageRepository } from '../storage/storage-repository';
 import { Clock } from '../time/clock';
@@ -208,6 +208,32 @@ export class AppStore {
         prediction,
       ],
     }));
+  }
+
+  /**
+   * Enregistre ou corrige le résultat réel d'un match (F-40, F-42). Ne touche jamais aux pronostics (F-43).
+   * La confirmation avant le coup d'envoi (F-41) est demandée par l'écran.
+   */
+  saveResult(matchId: Id, score: Score): UpdateResult {
+    if (!this.matches().some((m) => m.id === matchId)) {
+      return { ok: false, error: 'Match introuvable.' };
+    }
+    if (!isValidScoreValue(score.home) || !isValidScoreValue(score.away)) {
+      return { ok: false, error: SCORE_ERROR };
+    }
+    const result: Result = { matchId, score, enteredAt: this.clock.now().toISOString() };
+    return this.commit((data) => ({
+      ...data,
+      results: [...data.results.filter((r) => r.matchId !== matchId), result],
+    }));
+  }
+
+  /** Supprime le résultat d'un match (F-42). Ne touche jamais aux pronostics (F-43). */
+  removeResult(matchId: Id): UpdateResult {
+    if (!this.results().some((r) => r.matchId === matchId)) {
+      return { ok: true };
+    }
+    return this.commit((data) => ({ ...data, results: data.results.filter((r) => r.matchId !== matchId) }));
   }
 
   /** Supprime le match, ses pronostics et son résultat (F-23). */

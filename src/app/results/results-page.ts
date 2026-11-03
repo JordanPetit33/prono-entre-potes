@@ -1,6 +1,6 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Id, Match } from '../core/models/app-data';
+import { Id, Match, Result } from '../core/models/app-data';
 import { matchesOfMatchday } from '../core/scoring/matches';
 import { AppStore } from '../core/state/app-store';
 import { toDatetimeLocal } from '../core/time/datetime-local';
@@ -8,11 +8,12 @@ import { formatKickoff } from '../core/time/format-kickoff';
 import { MatchFieldErrors } from '../core/validation/match';
 import { MatchdayHeader } from '../matchday/matchday-header/matchday-header';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { ResultEntry } from './result-entry/result-entry';
 
 /** Gestion des matchs d'une journée et saisie des résultats (F-70). */
 @Component({
   selector: 'app-results-page',
-  imports: [ConfirmDialog, MatchdayHeader],
+  imports: [ConfirmDialog, MatchdayHeader, ResultEntry],
   templateUrl: './results-page.html',
   styleUrl: './results-page.css',
 })
@@ -29,7 +30,7 @@ export class ResultsPage {
   });
   protected readonly matches = computed(() => matchesOfMatchday(this.store.matches(), this.matchday()));
   protected readonly readOnly = this.store.readOnly;
-  private readonly matchIdsWithResult = computed(() => new Set(this.store.results().map((r) => r.matchId)));
+  private readonly resultsByMatch = computed(() => new Map(this.store.results().map((r) => [r.matchId, r])));
 
   protected readonly homeTeam = signal('');
   protected readonly awayTeam = signal('');
@@ -106,7 +107,11 @@ export class ResultsPage {
   }
 
   protected hasResult(matchId: Id): boolean {
-    return this.matchIdsWithResult().has(matchId);
+    return this.resultsByMatch().has(matchId);
+  }
+
+  protected resultOf(matchId: Id): Result | null {
+    return this.resultsByMatch().get(matchId) ?? null;
   }
 
   protected label(match: Match): string {

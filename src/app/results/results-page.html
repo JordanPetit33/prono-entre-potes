@@ -32,6 +32,7 @@
             (click)="toDelete.set(match)"
           >Supprimer</button>
         </div>
+        <app-result-entry class="result" [match]="match" [result]="resultOf(match.id)" />
       </li>
     }
   </ul>

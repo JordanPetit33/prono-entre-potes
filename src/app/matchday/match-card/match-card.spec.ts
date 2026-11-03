@@ -149,6 +149,48 @@ describe('MatchCard', () => {
     });
   });
 
+  describe('terminé (résultat saisi)', () => {
+    const result: Result = { matchId: 'm1', score: { home: 1, away: 0 }, enteredAt: NOW.toISOString() };
+    const finalScore = (): string | undefined =>
+      el().querySelector('[data-testid="result"]')?.textContent?.replace(/\s+/g, '');
+
+    it('affiche l’état « Terminé » et le score réel, même avant le coup d’envoi', async () => {
+      await render();
+      fixture.componentInstance.result.set(result);
+      await fixture.whenStable();
+      expect(status()).toBe('Terminé');
+      expect(finalScore()).toBe('1–0');
+      expect(homeInput()).toBeNull();
+      expect(el().textContent).not.toContain('clôture dans');
+    });
+
+    it('affiche le pronostic du joueur actif à côté du score réel', async () => {
+      await render({
+        ...sampleData(),
+        predictions: [{ playerId: 'p1', matchId: 'm1', score: { home: 2, away: 0 }, updatedAt: NOW.toISOString() }],
+      });
+      fixture.componentInstance.result.set(result);
+      await fixture.whenStable();
+      expect(el().querySelector('[data-testid="own-prediction"]')?.textContent?.replace(/\s+/g, ' ').trim()).toBe(
+        'Ton prono : 2 – 0',
+      );
+    });
+
+    it('signale l’absence de pronostic', async () => {
+      await render();
+      fixture.componentInstance.result.set(result);
+      await fixture.whenStable();
+      expect(el().querySelector('[data-testid="own-prediction"]')?.textContent?.trim()).toBe('Pas de prono');
+    });
+
+    it('n’affiche aucun bouton', async () => {
+      await render();
+      fixture.componentInstance.result.set(result);
+      await fixture.whenStable();
+      expect(el().querySelectorAll('button')).toHaveLength(0);
+    });
+  });
+
   describe('verrouillé', () => {
     it('au coup d’envoi : champs désactivés, mention « Verrouillé », pas de bouton', async () => {
       await render(sampleData(), new Date(KICKOFF));
@@ -172,12 +214,6 @@ describe('MatchCard', () => {
       expect(button('Modifier mon prono')).toBeUndefined();
     });
 
-    it('quand un résultat existe, même avant le coup d’envoi', async () => {
-      await render();
-      fixture.componentInstance.result.set({ matchId: 'm1', score: { home: 1, away: 0 }, enteredAt: NOW.toISOString() });
-      await fixture.whenStable();
-      expect(status()).toBe('Verrouillé');
-    });
 
     it('affiche le refus du store si le match se verrouille pendant la saisie', async () => {
       await render(sampleData(), new Date(KICKOFF));

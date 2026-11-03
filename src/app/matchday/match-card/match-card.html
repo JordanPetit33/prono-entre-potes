@@ -23,7 +23,13 @@
         <span class="name" data-testid="team-name">{{ match().homeTeam }}</span>
       </div>
 
-      @if (mode() === 'saved') {
+      @if (mode() === 'finished') {
+        <div class="score" data-testid="result">
+          <span class="box final">{{ result()?.score?.home }}</span>
+          <span class="separator">–</span>
+          <span class="box final">{{ result()?.score?.away }}</span>
+        </div>
+      } @else if (mode() === 'saved') {
         <div class="score" data-testid="prediction">
           <span class="box">{{ prediction()?.score?.home }}</span>
           <span class="separator">–</span>
@@ -70,6 +76,16 @@
         <span class="name" data-testid="team-name">{{ match().awayTeam }}</span>
       </div>
     </div>
+
+    @if (mode() === 'finished') {
+      <p class="own-prediction" data-testid="own-prediction">
+        @if (prediction(); as p) {
+          Ton prono : {{ p.score.home }} – {{ p.score.away }}
+        } @else {
+          Pas de prono
+        }
+      </p>
+    }
 
     @if (error(); as message) {
       <p [id]="'score-error-' + match().id" class="error" role="alert">{{ message }}</p>

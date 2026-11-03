@@ -54,6 +54,11 @@ form {
   color: #4a5650;
 }
 
+.chip.finished {
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
 .teams {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -136,6 +141,19 @@ input.box[aria-invalid='true'] {
 
 input.box::placeholder {
   color: #8a978f;
+}
+
+span.box.final {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--on-brand);
+}
+
+.own-prediction {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  text-align: center;
 }
 
 .separator {

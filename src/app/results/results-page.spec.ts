@@ -97,6 +97,14 @@ describe('ResultsPage', () => {
     expect(listedMatches()).toEqual(['Lille – Nice', 'Rennes – Monaco']);
   });
 
+  it('chaque match a sa saisie de résultat', async () => {
+    seed();
+    await render('1');
+    expect(el().querySelector('#result-home-m1')).not.toBeNull();
+    expect(el().querySelector('#result-home-m2')).not.toBeNull();
+    expect(el().querySelector('#result-home-m3')).toBeNull();
+  });
+
   it('affiche un message quand la journée n’a pas de match', async () => {
     await render('4');
     expect(listedMatches()).toEqual([]);
@@ -177,7 +185,8 @@ describe('ResultsPage', () => {
   });
 
   describe('suppression', () => {
-    const dialog = (): HTMLDialogElement => el().querySelector('dialog')!;
+    // La boîte de la page, et non celles des saisies de résultat de chaque match.
+    const dialog = (): HTMLDialogElement => el().querySelector(':scope > app-confirm-dialog dialog')!;
 
     async function clickInDialog(label: string): Promise<void> {
       const button = Array.from(dialog().querySelectorAll('button')).find((b) => b.textContent?.trim() === label);

@@ -170,15 +170,15 @@ Pour chaque étape, la boucle est la même : envoyer le prompt, laisser l'agent 
 
 ## Étape 12 · Saisie des résultats
 
-- [ ] Tests de `saveResult` et `removeResult` écrits et en échec
-- [ ] Test « un résultat ne modifie aucun pronostic » écrit et en échec (F-43)
-- [ ] Tests de la page Résultats écrits et en échec (saisie, confirmation avant le coup d'envoi, correction, suppression)
-- [ ] Test de l'état « Terminé » de la carte de match écrit et en échec
-- [ ] `saveResult` et `removeResult` dans `AppStore`
-- [ ] Formulaire de résultat dans la page Résultats
-- [ ] État « Terminé » dans la carte de match
-- [ ] `npm test` passe
-- [ ] `npm run build` compile
+- [x] Tests de `saveResult` et `removeResult` écrits et en échec
+- [x] Test « un résultat ne modifie aucun pronostic » écrit et en échec (F-43)
+- [x] Tests de la page Résultats écrits et en échec (saisie, confirmation avant le coup d'envoi, correction, suppression)
+- [x] Test de l'état « Terminé » de la carte de match écrit et en échec
+- [x] `saveResult` et `removeResult` dans `AppStore`
+- [x] Formulaire de résultat dans la page Résultats
+- [x] État « Terminé » dans la carte de match
+- [x] `npm test` passe
+- [x] `npm run build` compile
 - [ ] Vérifié avec `npm start` : saisie, correction et suppression d'un résultat
 - [ ] Vérifié : le prono du joueur reste inchangé après la saisie du résultat
 - [ ] Commit

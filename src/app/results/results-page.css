@@ -74,6 +74,10 @@ h3 {
   color: var(--danger);
 }
 
+.result {
+  flex-basis: 100%;
+}
+
 .teams {
   font-weight: 600;
 }
