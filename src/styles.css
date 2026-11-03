@@ -1,4 +1,17 @@
+:root {
+  --brand: #0e3b2c;
+  --on-brand: #ffffff;
+  --accent: #c8f25a;
+  --ground: #f4f6f1;
+  --surface: #ffffff;
+  --border: #e2e7e1;
+  --text: #12211a;
+  --text-muted: #5b6b62;
+}
+
 body {
   margin: 0;
   font-family: system-ui, sans-serif;
+  color: var(--text);
+  background: var(--ground);
 }

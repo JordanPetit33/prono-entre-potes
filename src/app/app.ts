@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { BottomNav } from './shared/bottom-nav/bottom-nav';
 
 @Component({
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, BottomNav],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',

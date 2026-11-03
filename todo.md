@@ -23,19 +23,19 @@ Pour chaque étape, la boucle est la même : envoyer le prompt, laisser l'agent 
 - [x] Gabarit de démonstration remplacé par un composant racine minimal avec `<router-outlet>`
 - [x] `npm test` passe
 - [x] `npm run build` compile
-- [ ] Vérifié avec `npm start` : le titre s'affiche
-- [ ] Commit
+- [x] Vérifié avec `npm start` : le titre s'affiche
+- [x] Commit
 
 ## Étape 2 · Coquille : navigation et routes
 
-- [ ] Tests écrits et en échec : trois liens, `aria-current`, redirections, pages par route
-- [ ] `app.routes.ts` avec les routes de spec §4.3
-- [ ] Pages vides : Journée, Résultats, Classement, Joueurs
-- [ ] Barre de navigation du bas (`shared/bottom-nav/`)
-- [ ] En-tête « Prono entre potes » dans le composant racine
-- [ ] Mise en page mobile, zones tactiles ≥ 44 px
-- [ ] `npm test` passe
-- [ ] `npm run build` compile
+- [x] Tests écrits et en échec : trois liens, `aria-current`, redirections, pages par route
+- [x] `app.routes.ts` avec les routes de spec §4.3
+- [x] Pages vides : Journée, Résultats, Classement, Joueurs
+- [x] Barre de navigation du bas (`shared/bottom-nav/`)
+- [x] En-tête « Prono entre potes » dans le composant racine
+- [x] Mise en page mobile, zones tactiles ≥ 44 px
+- [x] `npm test` passe
+- [x] `npm run build` compile
 - [ ] Vérifié avec `npm start` : navigation entre les onglets, route inconnue redirigée
 - [ ] Commit
 
