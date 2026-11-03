@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { MemoryStorage } from '../../../testing/memory-storage';
 import { AppData, createEmptyAppData } from '../models/app-data';
-import { ACTIVE_PLAYER_KEY, APP_STORAGE, DATA_KEY } from '../storage/storage-repository';
+import { ACTIVE_PLAYER_KEY, APP_STORAGE, BACKUP_KEY, DATA_KEY } from '../storage/storage-repository';
 import { AppStore } from './app-store';
 
 describe('AppStore et stockage', () => {
@@ -146,6 +146,12 @@ describe('AppStore et stockage', () => {
       expect(storage.getItem(DATA_KEY)).toBe(raw);
     });
 
+    it('données illisibles : la copie de secours n’est jamais touchée par une modification', () => {
+      const store = createStore({ [DATA_KEY]: '{pas du json' });
+      store.addPlayer('Tom');
+      expect(storage.getItem(BACKUP_KEY)).toBe('{pas du json');
+    });
+
     it('stockage inaccessible : l’application fonctionne en mémoire', () => {
       storage = new MemoryStorage();
       storage.blocked = true;
@@ -153,6 +159,85 @@ describe('AppStore et stockage', () => {
       const store = TestBed.inject(AppStore);
       expect(store.addPlayer('Tom').ok).toBe(true);
       expect(store.players().map((p) => p.name)).toEqual(['Tom']);
+      expect(store.storageError()).toBeNull();
+    });
+  });
+
+  describe('lecture seule (version plus récente)', () => {
+    const readOnlyError = {
+      ok: false,
+      error: 'Ces données viennent d’une version plus récente de l’application : mettez-la à jour pour les modifier.',
+    };
+
+    function createReadOnlyStore(): AppStore {
+      return createStore({ [DATA_KEY]: JSON.stringify({ ...sampleData(), schemaVersion: 2 }) });
+    }
+
+    it('readOnly vaut true', () => {
+      expect(createReadOnlyStore().readOnly()).toBe(true);
+    });
+
+    it('readOnly vaut false quand les données sont chargées normalement', () => {
+      expect(createStore().readOnly()).toBe(false);
+    });
+
+    it('refuse l’ajout d’un joueur', () => {
+      const store = createReadOnlyStore();
+      expect(store.addPlayer('Tom')).toEqual(readOnlyError);
+      expect(store.players().map((p) => p.name)).toEqual(['Karim', 'Léa']);
+    });
+
+    it('refuse le renommage', () => {
+      const store = createReadOnlyStore();
+      expect(store.renamePlayer('p1', 'Karim B')).toEqual(readOnlyError);
+      expect(store.players().map((p) => p.name)).toEqual(['Karim', 'Léa']);
+    });
+
+    it('refuse la suppression', () => {
+      const store = createReadOnlyStore();
+      expect(store.removePlayer('p1')).toEqual(readOnlyError);
+      expect(store.players().map((p) => p.name)).toEqual(['Karim', 'Léa']);
+    });
+  });
+
+  describe('resetData', () => {
+    it('repart d’un AppData vide, l’enregistre et repasse au statut "ok"', () => {
+      const store = createStore({ [DATA_KEY]: '{pas du json' });
+      expect(store.resetData()).toEqual({ ok: true });
+      expect(store.players()).toEqual([]);
+      expect(store.storageStatus()).toBe('ok');
+      expect(stored()).toEqual(createEmptyAppData());
+    });
+
+    it('conserve la copie de secours', () => {
+      const store = createStore({ [DATA_KEY]: '{pas du json' });
+      store.resetData();
+      expect(storage.getItem(BACKUP_KEY)).toBe('{pas du json');
+    });
+
+    it('les modifications suivantes sont enregistrées', () => {
+      const store = createStore({ [DATA_KEY]: '{pas du json' });
+      store.resetData();
+      store.addPlayer('Tom');
+      expect(stored().players.map((p) => p.name)).toEqual(['Tom']);
+    });
+
+    it('si l’enregistrement échoue, rien ne change et l’erreur est exposée', () => {
+      const store = createStore({ [DATA_KEY]: '{pas du json' });
+      storage.full = true;
+      expect(store.resetData().ok).toBe(false);
+      expect(store.storageStatus()).toBe('corrupted');
+      expect(store.storageError()).toBe('quota');
+      expect(storage.getItem(DATA_KEY)).toBe('{pas du json');
+    });
+  });
+
+  describe('dismissStorageError', () => {
+    it('efface l’erreur d’enregistrement', () => {
+      const store = createStore();
+      storage.full = true;
+      store.addPlayer('Tom');
+      store.dismissStorageError();
       expect(store.storageError()).toBeNull();
     });
   });

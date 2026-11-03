@@ -1,0 +1,40 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+p {
+  margin: 0;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.error {
+  color: var(--danger);
+}
+
+.danger {
+  min-height: 48px;
+  border: none;
+  border-radius: 12px;
+  background: var(--danger);
+  color: var(--on-brand);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.danger:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}

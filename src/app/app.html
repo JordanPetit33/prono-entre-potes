@@ -1,10 +1,17 @@
 <header>
   <h1>{{ title }}</h1>
-  @if (hasPlayers()) {
+  @if (hasPlayers() && !corrupted()) {
     <app-player-picker />
   }
 </header>
-<main>
-  <router-outlet />
-</main>
-<app-bottom-nav />
+<app-storage-banner />
+@if (corrupted()) {
+  <main>
+    <app-storage-error-screen />
+  </main>
+} @else {
+  <main>
+    <router-outlet />
+  </main>
+  <app-bottom-nav />
+}

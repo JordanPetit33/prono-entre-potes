@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { createEmptyAppData } from '../core/models/app-data';
 import { AppStore } from '../core/state/app-store';
+import { DATA_KEY } from '../core/storage/storage-repository';
 import { PlayersPage } from './players-page';
 
 describe('PlayersPage', () => {
@@ -116,6 +118,32 @@ describe('PlayersPage', () => {
       await click(buttonByLabel('Annuler le renommage'));
       expect(el().querySelector('#rename-player-name')).toBeNull();
       expect(names()).toEqual(['Karim', 'Léa']);
+    });
+  });
+
+  describe('lecture seule', () => {
+    beforeEach(async () => {
+      TestBed.resetTestingModule();
+      window.localStorage.setItem(
+        DATA_KEY,
+        JSON.stringify({
+          ...createEmptyAppData(),
+          schemaVersion: 2,
+          players: [{ id: 'p1', name: 'Karim', createdAt: '2026-11-01T10:00:00.000Z' }],
+        }),
+      );
+      fixture = TestBed.createComponent(PlayersPage);
+      await fixture.whenStable();
+    });
+
+    it('désactive le formulaire d’ajout', () => {
+      expect(el().querySelector<HTMLInputElement>('#new-player-name')?.disabled).toBe(true);
+      expect(buttonByLabel('Ajouter').disabled).toBe(true);
+    });
+
+    it('désactive le renommage et la suppression', () => {
+      expect(buttonByLabel('Renommer Karim').disabled).toBe(true);
+      expect(buttonByLabel('Supprimer Karim').disabled).toBe(true);
     });
   });
 

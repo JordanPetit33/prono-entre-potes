@@ -8,11 +8,12 @@
       type="text"
       autocomplete="off"
       [value]="newName()"
+      [disabled]="readOnly()"
       (input)="newName.set(valueOf($event))"
       [attr.aria-invalid]="addError() ? 'true' : null"
       [attr.aria-describedby]="addError() ? 'new-player-name-error' : null"
     />
-    <button type="submit" class="primary">Ajouter</button>
+    <button type="submit" class="primary" [disabled]="readOnly()">Ajouter</button>
   </div>
   @if (addError(); as error) {
     <p id="new-player-name-error" class="error">{{ error }}</p>
@@ -47,10 +48,10 @@
           </form>
         } @else {
           <span class="name" data-testid="player-name">{{ player.name }}</span>
-          <button type="button" class="secondary" [attr.aria-label]="'Renommer ' + player.name" (click)="startRename(player)">
+          <button type="button" class="secondary" [attr.aria-label]="'Renommer ' + player.name" [disabled]="readOnly()" (click)="startRename(player)">
             Renommer
           </button>
-          <button type="button" class="secondary danger-text" [attr.aria-label]="'Supprimer ' + player.name" (click)="toDelete.set(player)">
+          <button type="button" class="secondary danger-text" [attr.aria-label]="'Supprimer ' + player.name" [disabled]="readOnly()" (click)="toDelete.set(player)">
             Supprimer
           </button>
         }

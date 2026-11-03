@@ -13,6 +13,7 @@ export class PlayersPage {
   private readonly store = inject(AppStore);
 
   protected readonly players = this.store.players;
+  protected readonly readOnly = this.store.readOnly;
 
   protected readonly newName = signal('');
   protected readonly addError = signal<string | null>(null);

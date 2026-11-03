@@ -59,6 +59,12 @@ button {
   cursor: pointer;
 }
 
+button:disabled,
+input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .primary {
   border: none;
   background: var(--brand);

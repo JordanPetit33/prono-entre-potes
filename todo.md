@@ -91,20 +91,20 @@ Pour chaque étape, la boucle est la même : envoyer le prompt, laisser l'agent 
 - [x] `AppStore` branché sur le dépôt
 - [x] `npm test` passe
 - [x] `npm run build` compile
-- [ ] Vérifié avec `npm start` : un joueur créé est toujours là après rechargement
-- [ ] Vérifié : le joueur actif est conservé après rechargement
+- [x] Vérifié avec `npm start` : un joueur créé est toujours là après rechargement
+- [x] Vérifié : le joueur actif est conservé après rechargement
 - [ ] Commit
 
 ## Étape 7 · Affichage des erreurs de stockage
 
-- [ ] Tests écrits et en échec : bandeau « non conservées », écran « données illisibles », « Repartir de zéro » avec confirmation, lecture seule, message de quota
-- [ ] `resetData()` et `readOnly` dans `AppStore`
-- [ ] Composant `shared/storage-banner/`
-- [ ] Composant `shared/storage-error-screen/`
-- [ ] Formulaires désactivés en lecture seule
-- [ ] Branchement dans le composant racine
-- [ ] `npm test` passe
-- [ ] `npm run build` compile
+- [x] Tests écrits et en échec : bandeau « non conservées », écran « données illisibles », « Repartir de zéro » avec confirmation, lecture seule, message de quota
+- [x] `resetData()` et `readOnly` dans `AppStore`
+- [x] Composant `shared/storage-banner/`
+- [x] Composant `shared/storage-error-screen/`
+- [x] Formulaires désactivés en lecture seule
+- [x] Branchement dans le composant racine
+- [x] `npm test` passe
+- [x] `npm run build` compile
 - [ ] Vérifié avec `npm start` : en navigation privée ou après avoir corrompu la clé à la main dans les outils de développement
 - [ ] Commit
 

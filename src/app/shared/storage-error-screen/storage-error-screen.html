@@ -1,0 +1,21 @@
+<section class="card">
+  <h2>Données illisibles</h2>
+  <p>
+    Les données enregistrées sur cet appareil n’ont pas pu être lues. Elles sont peut-être abîmées.
+  </p>
+  <p>
+    Une copie de ces données a été conservée dans le navigateur : elle ne sera pas effacée.
+  </p>
+  @if (error(); as message) {
+    <p class="error" role="alert">{{ message }}</p>
+  }
+  <button type="button" class="danger" (click)="confirming.set(true)">Repartir de zéro</button>
+</section>
+
+<app-confirm-dialog
+  [open]="confirming()"
+  message="Toutes les données de l’application seront effacées et vous repartirez de zéro. La copie de secours reste conservée."
+  confirmLabel="Effacer et repartir de zéro"
+  (confirmed)="reset()"
+  (cancelled)="confirming.set(false)"
+/>

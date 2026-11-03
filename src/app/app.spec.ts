@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { App } from './app';
 import { AppStore } from './core/state/app-store';
+import { DATA_KEY } from './core/storage/storage-repository';
 
 describe('App', () => {
   beforeEach(async () => {
@@ -45,5 +46,23 @@ describe('App', () => {
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('header app-player-picker')?.textContent).toContain('Karim');
+  });
+
+  it('données illisibles : l’écran d’erreur remplace le contenu et la navigation', async () => {
+    window.localStorage.setItem(DATA_KEY, '{pas du json');
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('app-storage-error-screen')).not.toBeNull();
+    expect(compiled.querySelector('router-outlet')).toBeNull();
+    expect(compiled.querySelector('app-bottom-nav')).toBeNull();
+  });
+
+  it('affiche le bandeau de stockage au-dessus du contenu', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('app-storage-banner')).not.toBeNull();
+    expect(compiled.querySelector('app-storage-error-screen')).toBeNull();
   });
 });

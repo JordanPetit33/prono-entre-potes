@@ -1,0 +1,24 @@
+@switch (status()) {
+  @case ('unavailable') {
+    <p class="banner warning" role="status">
+      Vos données ne seront pas conservées sur cet appareil. Le navigateur bloque le stockage, par exemple en navigation privée.
+    </p>
+  }
+  @case ('newer-version') {
+    <p class="banner warning" role="status">
+      Ces données ont été enregistrées par une version plus récente. Mettez à jour l’application pour pouvoir les modifier.
+    </p>
+  }
+}
+
+@if (errorMessage(); as message) {
+  <div class="banner error" role="alert">
+    <p>{{ message }}</p>
+    <button type="button" aria-label="Fermer le message" (click)="dismiss()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M18 6 6 18" />
+        <path d="m6 6 12 12" />
+      </svg>
+    </button>
+  </div>
+}

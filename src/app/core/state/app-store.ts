@@ -7,10 +7,13 @@ export type AddPlayerResult = { ok: true; player: Player } | { ok: false; error:
 export type UpdateResult = { ok: true } | { ok: false; error: string };
 export type StorageStatus = LoadResult['status'];
 
-const SAVE_ERROR_MESSAGES: Record<SaveError, string> = {
+export const SAVE_ERROR_MESSAGES: Record<SaveError, string> = {
   quota: 'L’espace de stockage est plein : la modification n’a pas été enregistrée.',
   unavailable: 'Le stockage n’est pas accessible : la modification n’a pas été enregistrée.',
 };
+
+const READ_ONLY_MESSAGE =
+  'Ces données viennent d’une version plus récente de l’application : mettez-la à jour pour les modifier.';
 
 /** État de l'application. Les composants passent par ce service pour lire et modifier les données. */
 @Injectable({ providedIn: 'root' })
@@ -42,6 +45,28 @@ export class AppStore {
       this.data.set(loaded.data);
     }
     this.selectedPlayerId.set(this.repository.loadActivePlayer());
+  }
+
+  /** Données écrites par une version plus récente : aucune modification possible. */
+  readonly readOnly = computed(() => this.storageStatus() === 'newer-version');
+
+  /** Repart d'un état vide et l'enregistre, après des données illisibles. La copie de secours reste intacte. */
+  resetData(): UpdateResult {
+    const empty = createEmptyAppData();
+    const saved = this.repository.save(empty);
+    if (!saved.ok) {
+      this.storageError.set(saved.error);
+      return { ok: false, error: SAVE_ERROR_MESSAGES[saved.error] };
+    }
+    this.storageError.set(null);
+    this.storageStatus.set('ok');
+    this.selectedPlayerId.set(null);
+    this.data.set(empty);
+    return { ok: true };
+  }
+
+  dismissStorageError(): void {
+    this.storageError.set(null);
   }
 
   /** Remplace l'état en mémoire, sans l'enregistrer. */
@@ -111,6 +136,9 @@ export class AppStore {
    * ou écrites par une version plus récente ne sont jamais écrasées, et sans stockage on reste en mémoire.
    */
   private commit(change: (data: AppData) => AppData): UpdateResult {
+    if (this.readOnly()) {
+      return { ok: false, error: READ_ONLY_MESSAGE };
+    }
     const next = change(this.data());
     if (this.storageStatus() === 'ok') {
       const saved = this.repository.save(next);
