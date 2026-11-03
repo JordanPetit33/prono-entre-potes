@@ -55,15 +55,15 @@ Pour chaque étape, la boucle est la même : envoyer le prompt, laisser l'agent 
 
 ## Étape 4 · Écran de gestion des joueurs
 
-- [ ] Tests de `renamePlayer` et `removePlayer` écrits et en échec (suppression des pronostics du seul joueur concerné)
-- [ ] Tests du composant de confirmation écrits et en échec
-- [ ] Tests de la page Joueurs écrits et en échec (liste, erreur sous le champ, confirmation, annulation)
-- [ ] `renamePlayer`, `removePlayer` et initialisation depuis un `AppData` dans `AppStore`
-- [ ] Composant de confirmation (`shared/confirm-dialog/`, `<dialog>` natif)
-- [ ] Page Joueurs avec formulaire accessible
-- [ ] Lien de l'écran d'accueil vers `/joueurs`
-- [ ] `npm test` passe
-- [ ] `npm run build` compile
+- [x] Tests de `renamePlayer` et `removePlayer` écrits et en échec (suppression des pronostics du seul joueur concerné)
+- [x] Tests du composant de confirmation écrits et en échec
+- [x] Tests de la page Joueurs écrits et en échec (liste, erreur sous le champ, confirmation, annulation)
+- [x] `renamePlayer`, `removePlayer` et initialisation depuis un `AppData` dans `AppStore`
+- [x] Composant de confirmation (`shared/confirm-dialog/`, `<dialog>` natif)
+- [x] Page Joueurs avec formulaire accessible
+- [x] Lien de l'écran d'accueil vers `/joueurs`
+- [x] `npm test` passe
+- [x] `npm run build` compile
 - [ ] Vérifié avec `npm start` : ajout, renommage, doublon refusé, suppression confirmée
 - [ ] Commit
 

@@ -1,0 +1,70 @@
+<h2>Joueurs</h2>
+
+<form class="card add" (submit)="add($event)" novalidate>
+  <label for="new-player-name">Nom du joueur</label>
+  <div class="row">
+    <input
+      id="new-player-name"
+      type="text"
+      autocomplete="off"
+      [value]="newName()"
+      (input)="newName.set(valueOf($event))"
+      [attr.aria-invalid]="addError() ? 'true' : null"
+      [attr.aria-describedby]="addError() ? 'new-player-name-error' : null"
+    />
+    <button type="submit" class="primary">Ajouter</button>
+  </div>
+  @if (addError(); as error) {
+    <p id="new-player-name-error" class="error">{{ error }}</p>
+  }
+</form>
+
+@if (players().length > 0) {
+  <ul class="card list">
+    @for (player of players(); track player.id) {
+      <li>
+        @if (renamingId() === player.id) {
+          <form class="rename" (submit)="saveRename($event)" novalidate>
+            <label class="sr-only" for="rename-player-name">Nouveau nom de {{ player.name }}</label>
+            <div class="row">
+              <input
+                id="rename-player-name"
+                type="text"
+                autocomplete="off"
+                [value]="renameValue()"
+                (input)="renameValue.set(valueOf($event))"
+                [attr.aria-invalid]="renameError() ? 'true' : null"
+                [attr.aria-describedby]="renameError() ? 'rename-player-name-error' : null"
+              />
+              <button type="submit" class="primary">Enregistrer</button>
+              <button type="button" class="secondary" aria-label="Annuler le renommage" (click)="cancelRename()">
+                Annuler
+              </button>
+            </div>
+            @if (renameError(); as error) {
+              <p id="rename-player-name-error" class="error">{{ error }}</p>
+            }
+          </form>
+        } @else {
+          <span class="name" data-testid="player-name">{{ player.name }}</span>
+          <button type="button" class="secondary" [attr.aria-label]="'Renommer ' + player.name" (click)="startRename(player)">
+            Renommer
+          </button>
+          <button type="button" class="secondary danger-text" [attr.aria-label]="'Supprimer ' + player.name" (click)="toDelete.set(player)">
+            Supprimer
+          </button>
+        }
+      </li>
+    }
+  </ul>
+} @else {
+  <p class="empty">Aucun joueur pour l’instant.</p>
+}
+
+<app-confirm-dialog
+  [open]="toDelete() !== null"
+  [message]="deleteMessage()"
+  confirmLabel="Supprimer"
+  (confirmed)="confirmDelete()"
+  (cancelled)="toDelete.set(null)"
+/>
