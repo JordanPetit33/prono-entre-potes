@@ -1,6 +1,7 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { Id, Match, Prediction, Result, Score } from '../../core/models/app-data';
 import { MatchPoints } from '../../core/scoring/points';
+import { formatPoints } from '../../core/scoring/standings';
 import { AppStore } from '../../core/state/app-store';
 import { formatKickoff } from '../../core/time/format-kickoff';
 import { timeUntil } from '../../core/time/time-until';
@@ -24,8 +25,7 @@ interface OtherPrediction {
 
 /** « 0 pt », « +1 pt », « +3 pts ». */
 function pointsShort(points: number): string {
-  if (points === 0) return '0 pt';
-  return `+${points} ${points > 1 ? 'pts' : 'pt'}`;
+  return points === 0 ? formatPoints(0) : `+${formatPoints(points)}`;
 }
 
 const STATUS_LABELS: Record<CardMode, string> = {

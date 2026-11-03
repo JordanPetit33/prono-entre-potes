@@ -104,9 +104,34 @@ h3 {
   gap: 6px;
 }
 
-label {
+label,
+legend {
   font-size: 14px;
   font-weight: 600;
+}
+
+fieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
+  min-width: 0;
+}
+
+legend {
+  padding: 0;
+  margin-bottom: 6px;
+}
+
+.kickoff-row {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 8px;
+}
+
+.sub-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
 }
 
 input {

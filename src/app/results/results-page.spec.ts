@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { createEmptyAppData } from '../core/models/app-data';
 import { AppStore } from '../core/state/app-store';
 import { DATA_KEY } from '../core/storage/storage-repository';
-import { toDatetimeLocal } from '../core/time/datetime-local';
+import { toKickoffFields } from '../core/time/kickoff-fields';
 import { ResultsPage } from './results-page';
 
 describe('ResultsPage', () => {
@@ -38,10 +38,11 @@ describe('ResultsPage', () => {
     await fixture.whenStable();
   }
 
-  async function fillAndSubmit(home: string, away: string, kickoff: string): Promise<void> {
+  async function fillAndSubmit(home: string, away: string, date: string, time: string): Promise<void> {
     await type('home-team', home);
     await type('away-team', away);
-    await type('kickoff', kickoff);
+    await type('kickoff-date', date);
+    await type('kickoff-time', time);
     await submit();
   }
 
@@ -85,9 +86,10 @@ describe('ResultsPage', () => {
       expect(navigate).toHaveBeenCalledWith('/resultats/2');
     });
 
-    it('n’affiche pas de compteur de pronostics', async () => {
+    it('n’affiche ni compteur de pronostics ni classement', async () => {
       await render('3');
       expect(el().querySelector('[role="progressbar"]')).toBeNull();
+      expect(el().querySelector('[data-testid="standing"]')).toBeNull();
     });
   });
 
@@ -151,7 +153,9 @@ describe('ResultsPage', () => {
       expect(el().querySelector('form h3')?.textContent?.trim()).toBe('Modifier le match');
       expect(field('home-team').value).toBe('Lille');
       expect(field('away-team').value).toBe('Nice');
-      expect(field('kickoff').value).toBe(toDatetimeLocal('2026-11-15T14:00:00.000Z'));
+      const expected = toKickoffFields('2026-11-15T14:00:00.000Z');
+      expect(field('kickoff-date').value).toBe(expected.date);
+      expect(field('kickoff-time').value).toBe(expected.time);
     });
 
     it('enregistrer modifie le match et revient au mode ajout', async () => {
@@ -247,33 +251,47 @@ describe('ResultsPage', () => {
   describe('formulaire « Ajouter un match »', () => {
     it('a un libellé pour chaque champ', async () => {
       await render();
-      const labels = ['home-team', 'away-team', 'kickoff'].map((id) =>
+      const labels = ['home-team', 'away-team', 'kickoff-date', 'kickoff-time'].map((id) =>
         el().querySelector(`label[for="${id}"]`)?.textContent?.trim(),
       );
-      expect(labels).toEqual(['Équipe à domicile', 'Équipe à l’extérieur', 'Coup d’envoi']);
-      expect(field('kickoff').type).toBe('datetime-local');
+      expect(labels).toEqual(['Équipe à domicile', 'Équipe à l’extérieur', 'Date', 'Heure']);
+      expect(el().querySelector('fieldset legend')?.textContent?.trim()).toBe('Coup d’envoi');
+    });
+
+    it('la date et l’heure sont des champs texte au format JJ/MM/AAAA et HH:mm', async () => {
+      await render();
+      expect(field('kickoff-date').type).toBe('text');
+      expect(field('kickoff-date').placeholder).toBe('JJ/MM/AAAA');
+      expect(field('kickoff-time').type).toBe('text');
+      expect(field('kickoff-time').placeholder).toBe('HH:mm');
     });
 
     it('crée un match dans la journée affichée', async () => {
       await render('2');
-      await fillAndSubmit('Lyon', 'Nantes', '2026-11-22T17:00');
+      await fillAndSubmit('Lyon', 'Nantes', '22/11/2026', '17:00');
       expect(store.matches()).toEqual([
-        expect.objectContaining({ matchday: 2, homeTeam: 'Lyon', awayTeam: 'Nantes' }),
+        expect.objectContaining({
+          matchday: 2,
+          homeTeam: 'Lyon',
+          awayTeam: 'Nantes',
+          kickoff: new Date('2026-11-22T17:00').toISOString(),
+        }),
       ]);
       expect(listedMatches()).toEqual(['Lyon – Nantes']);
     });
 
     it('vide les noms d’équipe après un ajout réussi et garde le coup d’envoi', async () => {
       await render();
-      await fillAndSubmit('Lyon', 'Nantes', '2026-11-22T17:00');
+      await fillAndSubmit('Lyon', 'Nantes', '22/11/2026', '17:00');
       expect(field('home-team').value).toBe('');
       expect(field('away-team').value).toBe('');
-      expect(field('kickoff').value).toBe('2026-11-22T17:00');
+      expect(field('kickoff-date').value).toBe('22/11/2026');
+      expect(field('kickoff-time').value).toBe('17:00');
     });
 
     it('affiche l’erreur sous le champ fautif', async () => {
       await render();
-      await fillAndSubmit('Lyon', 'lyon', '2026-11-22T17:00');
+      await fillAndSubmit('Lyon', 'lyon', '22/11/2026', '17:00');
       expect(el().querySelector('#away-team-error')?.textContent?.trim()).toBe(
         'Les deux équipes doivent être différentes.',
       );
@@ -289,6 +307,25 @@ describe('ResultsPage', () => {
       expect(el().querySelector('#home-team-error')).not.toBeNull();
       expect(el().querySelector('#away-team-error')).not.toBeNull();
       expect(el().querySelector('#kickoff-error')).not.toBeNull();
+    });
+
+    it('une date impossible affiche son erreur sous le coup d’envoi, avec les autres erreurs', async () => {
+      await render();
+      await fillAndSubmit('', 'Nantes', '31/02/2026', '17:00');
+      expect(el().querySelector('#kickoff-error')?.textContent?.trim()).toBe('Cette date n’existe pas.');
+      expect(el().querySelector('#home-team-error')).not.toBeNull();
+      expect(field('kickoff-date').getAttribute('aria-invalid')).toBe('true');
+      expect(field('kickoff-time').getAttribute('aria-describedby')).toBe('kickoff-error');
+      expect(store.matches()).toEqual([]);
+    });
+
+    it('une heure au mauvais format affiche son erreur', async () => {
+      await render();
+      await fillAndSubmit('Lyon', 'Nantes', '22/11/2026', '5 PM');
+      expect(el().querySelector('#kickoff-error')?.textContent?.trim()).toBe(
+        'L’heure doit être au format HH:mm, de 00:00 à 23:59.',
+      );
+      expect(store.matches()).toEqual([]);
     });
 
     it('est désactivé en lecture seule', async () => {

@@ -3,8 +3,8 @@ import { Router } from '@angular/router';
 import { Id, Match, Result } from '../core/models/app-data';
 import { matchesOfMatchday } from '../core/scoring/matches';
 import { AppStore } from '../core/state/app-store';
-import { toDatetimeLocal } from '../core/time/datetime-local';
 import { formatKickoff } from '../core/time/format-kickoff';
+import { kickoffFromFields, toKickoffFields } from '../core/time/kickoff-fields';
 import { MatchFieldErrors } from '../core/validation/match';
 import { MatchdayHeader } from '../matchday/matchday-header/matchday-header';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
@@ -34,7 +34,8 @@ export class ResultsPage {
 
   protected readonly homeTeam = signal('');
   protected readonly awayTeam = signal('');
-  protected readonly kickoff = signal('');
+  protected readonly kickoffDate = signal('');
+  protected readonly kickoffTime = signal('');
   protected readonly errors = signal<MatchFieldErrors>({});
   protected readonly saveError = signal<string | null>(null);
 
@@ -49,11 +50,14 @@ export class ResultsPage {
 
   protected save(event: Event): void {
     event.preventDefault();
+    // Un coup d'envoi illisible est transmis vide : le store signale toutes les erreurs d'un coup,
+    // puis on remplace son message sur le coup d'envoi par celui, plus précis, de la lecture des champs.
+    const kickoff = kickoffFromFields(this.kickoffDate(), this.kickoffTime());
     const input = {
       matchday: this.matchday(),
       homeTeam: this.homeTeam(),
       awayTeam: this.awayTeam(),
-      kickoff: this.kickoff(),
+      kickoff: kickoff.ok ? kickoff.kickoff : '',
     };
     const editingId = this.editingId();
     const result = editingId ? this.store.updateMatch(editingId, input) : this.store.addMatch(input);
@@ -66,7 +70,7 @@ export class ResultsPage {
         this.clearErrors();
       }
     } else if ('errors' in result) {
-      this.errors.set(result.errors);
+      this.errors.set(kickoff.ok ? result.errors : { ...result.errors, kickoff: kickoff.error });
       this.saveError.set(null);
     } else {
       this.errors.set({});
@@ -83,7 +87,9 @@ export class ResultsPage {
     this.editingId.set(match.id);
     this.homeTeam.set(match.homeTeam);
     this.awayTeam.set(match.awayTeam);
-    this.kickoff.set(toDatetimeLocal(match.kickoff));
+    const { date, time } = toKickoffFields(match.kickoff);
+    this.kickoffDate.set(date);
+    this.kickoffTime.set(time);
     this.clearErrors();
   }
 

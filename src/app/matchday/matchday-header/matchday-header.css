@@ -50,6 +50,40 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
+.standing {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 8%);
+  color: var(--on-brand);
+  text-decoration: none;
+}
+
+.standing:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.standing-label {
+  font-size: 13px;
+  color: #b9d3c6;
+}
+
+.standing-value {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.standing-gap {
+  font-size: 13px;
+  color: #b9d3c6;
+}
+
 .progress {
   display: flex;
   flex-direction: column;

@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { MatchdayHeader } from './matchday-header';
 
 describe('MatchdayHeader', () => {
@@ -10,7 +11,9 @@ describe('MatchdayHeader', () => {
     previous: number | null;
     next: number | null;
     progress?: { done: number; total: number } | null;
+    standing?: { rank: number; points: number; gap: string | null } | null;
   }): Promise<void> {
+    TestBed.configureTestingModule({ providers: [provideRouter([])] });
     fixture = TestBed.createComponent(MatchdayHeader);
     for (const [name, value] of Object.entries(inputs)) {
       fixture.componentRef.setInput(name, value);
@@ -68,6 +71,28 @@ describe('MatchdayHeader', () => {
     it('est masqué sans progression', async () => {
       await render({ matchday: 1, previous: null, next: null });
       expect(el().querySelector('[role="progressbar"]')).toBeNull();
+    });
+  });
+
+  describe('classement du joueur actif (F-62)', () => {
+    const standing = (): HTMLAnchorElement | null => el().querySelector('a[data-testid="standing"]');
+    const text = (): string | undefined => standing()?.textContent?.replace(/\s+/g, ' ').trim();
+
+    it('affiche le rang, les points et l’écart, avec un lien vers le classement', async () => {
+      await render({ matchday: 1, previous: null, next: null, standing: { rank: 2, points: 41, gap: '3 pts derrière Léa' } });
+      expect(standing()?.getAttribute('href')).toBe('/classement');
+      expect(text()).toContain('2e · 41 pts');
+      expect(text()).toContain('3 pts derrière Léa');
+    });
+
+    it('n’affiche pas d’écart pour le premier', async () => {
+      await render({ matchday: 1, previous: null, next: null, standing: { rank: 1, points: 1, gap: null } });
+      expect(text()).toBe('Classement 1er · 1 pt');
+    });
+
+    it('est masqué sans classement', async () => {
+      await render({ matchday: 1, previous: null, next: null });
+      expect(standing()).toBeNull();
     });
   });
 });

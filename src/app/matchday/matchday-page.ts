@@ -2,10 +2,11 @@ import { Component, computed, DestroyRef, inject, input, signal } from '@angular
 import { Router, RouterLink } from '@angular/router';
 import { matchesOfMatchday } from '../core/scoring/matches';
 import { predictionProgress } from '../core/scoring/progress';
+import { gapToPrevious } from '../core/scoring/standings';
 import { AppStore } from '../core/state/app-store';
 import { Clock } from '../core/time/clock';
 import { MatchCard } from './match-card/match-card';
-import { MatchdayHeader } from './matchday-header/matchday-header';
+import { HeaderStanding, MatchdayHeader } from './matchday-header/matchday-header';
 
 /** Fréquence de mise à jour du verrouillage et du temps restant. */
 const REFRESH_MS = 30_000;
@@ -43,6 +44,14 @@ export class MatchdayPage {
   protected readonly progress = computed(() =>
     predictionProgress(this.matches(), this.store.predictions(), this.store.activePlayerId()),
   );
+
+  /** Place du joueur actif au classement général (F-62). */
+  protected readonly standing = computed((): HeaderStanding | null => {
+    const rows = this.store.standings();
+    const playerId = this.store.activePlayerId();
+    const own = rows.find((r) => r.playerId === playerId);
+    return own && playerId ? { rank: own.rank, points: own.points, gap: gapToPrevious(rows, playerId) } : null;
+  });
 
   constructor() {
     const timer = setInterval(() => this.now.set(this.clock.now()), REFRESH_MS);

@@ -1,0 +1,35 @@
+<h2>Classement</h2>
+
+@if (rows().length > 0) {
+  <div class="card">
+    <table>
+      <caption class="sr-only">Classement général</caption>
+      <thead>
+        <tr>
+          <th scope="col">Rang</th>
+          <th scope="col">Joueur</th>
+          <th scope="col">Points</th>
+          <th scope="col">Scores exacts</th>
+          <th scope="col">Matchs</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.playerId) {
+          <tr [class.active]="row.playerId === activePlayerId()" [attr.aria-current]="row.playerId === activePlayerId() ? 'true' : null">
+            <td class="rank">{{ row.rank }}</td>
+            <th scope="row" class="name">{{ row.name }}</th>
+            <td class="points">{{ row.points }}</td>
+            <td>{{ row.exactScores }}</td>
+            <td>{{ row.scoredMatches }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <p class="legend">Score exact : {{ pointsExact }} pts · bonne issue : {{ pointsOutcome }} pt. À égalité de points, le plus de scores exacts passe devant.</p>
+} @else {
+  <section class="card empty">
+    <p>Aucun joueur pour l’instant.</p>
+    <a class="button" routerLink="/joueurs">Créer les joueurs</a>
+  </section>
+}

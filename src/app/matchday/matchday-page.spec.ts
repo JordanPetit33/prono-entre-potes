@@ -111,6 +111,13 @@ describe('MatchdayPage', () => {
       expect(last.querySelector<HTMLButtonElement>('button[aria-label="Journée précédente"]')?.disabled).toBe(false);
     });
 
+    it('l’en-tête affiche le rang du joueur actif', async () => {
+      const el = await renderMatchday('1');
+      const standing = el.querySelector('a[data-testid="standing"]');
+      expect(standing?.getAttribute('href')).toBe('/classement');
+      expect(standing?.textContent?.replace(/\s+/g, ' ')).toContain('1er · 0 pt');
+    });
+
     it('sans match, invite à en ajouter dans l’écran Résultats', async () => {
       const el = await renderMatchday('7');
       expect(cards(el)).toEqual([]);

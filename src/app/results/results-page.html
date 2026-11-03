@@ -77,21 +77,46 @@
     }
   </div>
 
-  <div class="field">
-    <label for="kickoff">Coup d’envoi</label>
-    <input
-      id="kickoff"
-      type="datetime-local"
-      [value]="kickoff()"
-      [disabled]="readOnly()"
-      (input)="kickoff.set(valueOf($event))"
-      [attr.aria-invalid]="errors().kickoff ? 'true' : null"
-      [attr.aria-describedby]="errors().kickoff ? 'kickoff-error' : null"
-    />
+  <fieldset class="field">
+    <legend>Coup d’envoi</legend>
+    <div class="kickoff-row">
+      <div class="field">
+        <label class="sub-label" for="kickoff-date">Date</label>
+        <input
+          id="kickoff-date"
+          type="text"
+          inputmode="numeric"
+          autocomplete="off"
+          placeholder="JJ/MM/AAAA"
+          maxlength="10"
+          [value]="kickoffDate()"
+          [disabled]="readOnly()"
+          (input)="kickoffDate.set(valueOf($event))"
+          [attr.aria-invalid]="errors().kickoff ? 'true' : null"
+          [attr.aria-describedby]="errors().kickoff ? 'kickoff-error' : null"
+        />
+      </div>
+      <div class="field">
+        <label class="sub-label" for="kickoff-time">Heure</label>
+        <input
+          id="kickoff-time"
+          type="text"
+          inputmode="numeric"
+          autocomplete="off"
+          placeholder="HH:mm"
+          maxlength="5"
+          [value]="kickoffTime()"
+          [disabled]="readOnly()"
+          (input)="kickoffTime.set(valueOf($event))"
+          [attr.aria-invalid]="errors().kickoff ? 'true' : null"
+          [attr.aria-describedby]="errors().kickoff ? 'kickoff-error' : null"
+        />
+      </div>
+    </div>
     @if (errors().kickoff; as error) {
       <p id="kickoff-error" class="error">{{ error }}</p>
     }
-  </div>
+  </fieldset>
 
   @if (errors().matchday; as error) {
     <p class="error">{{ error }}</p>

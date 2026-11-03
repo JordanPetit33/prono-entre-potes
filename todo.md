@@ -201,16 +201,16 @@ Pour chaque étape, la boucle est la même : envoyer le prompt, laisser l'agent 
 
 ## Étape 14 · Classement
 
-- [ ] Tests de `standings` écrits et en échec (tri, départage, rang partagé 1-2-2-4, joueur sans prono)
-- [ ] Tests d'`AppStore` écrits et en échec (mise à jour après résultat et correction, joueur supprimé)
-- [ ] Tests de la page Classement écrits et en échec
-- [ ] Tests du rang dans l'en-tête de journée écrits et en échec
-- [ ] `core/scoring/standings.ts`, fonction pure
-- [ ] `standings` calculé dans `AppStore`
-- [ ] Page `/classement` avec tableau et ligne du joueur actif mise en évidence
-- [ ] Rang, points et écart dans l'en-tête de journée, avec lien vers `/classement`
-- [ ] `npm test` passe
-- [ ] `npm run build` compile
+- [x] Tests de `standings` écrits et en échec (tri, départage, rang partagé 1-2-2-4, joueur sans prono)
+- [x] Tests d'`AppStore` écrits et en échec (mise à jour après résultat et correction, joueur supprimé)
+- [x] Tests de la page Classement écrits et en échec
+- [x] Tests du rang dans l'en-tête de journée écrits et en échec
+- [x] `core/scoring/standings.ts`, fonction pure
+- [x] `standings` calculé dans `AppStore`
+- [x] Page `/classement` avec tableau et ligne du joueur actif mise en évidence
+- [x] Rang, points et écart dans l'en-tête de journée, avec lien vers `/classement`
+- [x] `npm test` passe
+- [x] `npm run build` compile
 - [ ] Vérifié avec `npm start` : classement à plusieurs joueurs, égalités
 - [ ] Commit
 

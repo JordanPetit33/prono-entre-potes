@@ -25,6 +25,16 @@
     </div>
   </div>
 
+  @if (standing(); as st) {
+    <a class="standing" routerLink="/classement" data-testid="standing">
+      <span class="standing-label">Classement </span>
+      <span class="standing-value">{{ rankLabel(st.rank) }} · {{ formatPoints(st.points) }}</span>
+      @if (st.gap) {
+        <span class="standing-gap"> {{ st.gap }}</span>
+      }
+    </a>
+  }
+
   @if (progress(); as p) {
     <div class="progress">
       <div class="progress-label">

@@ -2,7 +2,7 @@ import { Match } from '../models/app-data';
 
 export const TEAM_NAME_MAX_LENGTH = 40;
 
-/** Saisie d'un match. `kickoff` est la valeur d'un champ datetime-local (heure de l'appareil). */
+/** Saisie d'un match. `kickoff` est une date et heure locales lisibles par `new Date()`, ex. « 2026-11-15T15:30 ». */
 export interface MatchInput {
   matchday: number;
   homeTeam: string;

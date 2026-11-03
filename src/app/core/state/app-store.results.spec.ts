@@ -102,6 +102,40 @@ describe('AppStore et résultats', () => {
     });
   });
 
+  describe('classement', () => {
+    const ranking = (): [number, string, number][] => store.standings().map((r) => [r.rank, r.name, r.points]);
+
+    it('liste tous les joueurs à 0 point tant qu’aucun résultat n’est saisi', () => {
+      expect(ranking()).toEqual([
+        [1, 'Karim', 0],
+        [1, 'Léa', 0],
+      ]);
+    });
+
+    it('se met à jour après la saisie d’un résultat (F-63)', () => {
+      store.saveResult('m1', { home: 2, away: 1 });
+      expect(ranking()).toEqual([
+        [1, 'Léa', 3],
+        [2, 'Karim', 0],
+      ]);
+    });
+
+    it('se met à jour après la correction d’un résultat', () => {
+      store.saveResult('m1', { home: 2, away: 1 });
+      store.saveResult('m1', { home: 1, away: 1 });
+      expect(ranking()).toEqual([
+        [1, 'Karim', 3],
+        [2, 'Léa', 0],
+      ]);
+    });
+
+    it('un joueur supprimé disparaît du classement', () => {
+      store.saveResult('m1', { home: 2, away: 1 });
+      store.removePlayer('p2');
+      expect(ranking()).toEqual([[1, 'Karim', 0]]);
+    });
+  });
+
   it('après removeResult, le pronostic redevient possible si le match n’a pas commencé', () => {
     store.saveResult('m2', { home: 1, away: 1 });
     expect(store.savePrediction('m2', { home: 0, away: 0 }).ok).toBe(false);

@@ -1,0 +1,116 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+h2 {
+  margin: 4px 0 0;
+  font-size: 24px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+th,
+td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--border);
+  text-align: right;
+  white-space: nowrap;
+}
+
+thead th {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+tbody tr:last-child th,
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+th:first-child,
+td:first-child {
+  padding-left: 16px;
+  text-align: left;
+}
+
+.name {
+  width: 100%;
+  text-align: left;
+  font-weight: 600;
+}
+
+th:last-child,
+td:last-child {
+  padding-right: 16px;
+}
+
+.rank {
+  font-weight: 700;
+}
+
+.points {
+  font-weight: 700;
+}
+
+tr.active th,
+tr.active td {
+  background: var(--accent);
+}
+
+.legend {
+  margin: 0 4px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px 20px;
+}
+
+.empty p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.button {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--brand);
+  color: var(--on-brand);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
