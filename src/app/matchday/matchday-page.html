@@ -1,0 +1,9 @@
+@if (hasPlayers()) {
+  <h2>Journée</h2>
+} @else {
+  <section class="welcome">
+    <h2>Bienvenue</h2>
+    <p>Pour commencer, ajoutez les amis qui vont pronostiquer.</p>
+    <a class="button" routerLink="/joueurs">Créer les joueurs</a>
+  </section>
+}

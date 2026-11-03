@@ -1,7 +1,12 @@
+import { Type } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { routes } from './app.routes';
+import { MatchdayPage } from './matchday/matchday-page';
+import { PlayersPage } from './players/players-page';
+import { ResultsPage } from './results/results-page';
+import { StandingsPage } from './standings/standings-page';
 
 describe('routes', () => {
   let harness: RouterTestingHarness;
@@ -15,31 +20,31 @@ describe('routes', () => {
     router = TestBed.inject(Router);
   });
 
-  function pageTitle(): string | undefined {
-    return (harness.routeNativeElement as HTMLElement | null)?.querySelector('h2')?.textContent?.trim();
+  function routedPage(): unknown {
+    return harness.routeDebugElement?.componentInstance;
   }
 
   it('redirige "/" vers "/journee"', async () => {
     await harness.navigateByUrl('/');
     expect(router.url).toBe('/journee');
-    expect(pageTitle()).toBe('Journée');
+    expect(routedPage()).toBeInstanceOf(MatchdayPage);
   });
 
-  it.each([
-    ['/journee', 'Journée'],
-    ['/journee/3', 'Journée'],
-    ['/resultats/3', 'Résultats'],
-    ['/classement', 'Classement'],
-    ['/joueurs', 'Joueurs'],
-  ])('"%s" affiche la page « %s »', async (url, title) => {
+  it.each<[string, Type<unknown>]>([
+    ['/journee', MatchdayPage],
+    ['/journee/3', MatchdayPage],
+    ['/resultats/3', ResultsPage],
+    ['/classement', StandingsPage],
+    ['/joueurs', PlayersPage],
+  ])('"%s" affiche la page %O', async (url, page) => {
     await harness.navigateByUrl(url);
     expect(router.url).toBe(url);
-    expect(pageTitle()).toBe(title);
+    expect(routedPage()).toBeInstanceOf(page);
   });
 
   it('redirige une route inconnue vers "/journee"', async () => {
     await harness.navigateByUrl('/nimporte-quoi');
     expect(router.url).toBe('/journee');
-    expect(pageTitle()).toBe('Journée');
+    expect(routedPage()).toBeInstanceOf(MatchdayPage);
   });
 });

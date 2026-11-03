@@ -41,15 +41,15 @@ Pour chaque étape, la boucle est la même : envoyer le prompt, laisser l'agent 
 
 ## Étape 3 · Modèles, validation des joueurs, état en mémoire
 
-- [ ] Tests de `validatePlayerName` écrits et en échec (vide, espaces, 31 caractères, doublons casse/accents, 1 et 30 caractères)
-- [ ] Tests d'`AppStore` écrits et en échec (vide, `addPlayer`, refus d'un nom invalide)
-- [ ] Test de l'écran d'accueil sans joueur écrit et en échec
-- [ ] Types du domaine dans `core/models/` et `createEmptyAppData()`
-- [ ] `validatePlayerName`, fonction pure
-- [ ] `AppStore` en mémoire avec signaux
-- [ ] Écran d'accueil « Bienvenue » avec lien « Créer les joueurs » (F-15)
-- [ ] `npm test` passe
-- [ ] `npm run build` compile
+- [x] Tests de `validatePlayerName` écrits et en échec (vide, espaces, 31 caractères, doublons casse/accents, 1 et 30 caractères)
+- [x] Tests d'`AppStore` écrits et en échec (vide, `addPlayer`, refus d'un nom invalide)
+- [x] Test de l'écran d'accueil sans joueur écrit et en échec
+- [x] Types du domaine dans `core/models/` et `createEmptyAppData()`
+- [x] `validatePlayerName`, fonction pure
+- [x] `AppStore` en mémoire avec signaux
+- [x] Écran d'accueil « Bienvenue » avec lien « Créer les joueurs » (F-15)
+- [x] `npm test` passe
+- [x] `npm run build` compile
 - [ ] Vérifié avec `npm start` : l'écran d'accueil s'affiche
 - [ ] Commit
 
