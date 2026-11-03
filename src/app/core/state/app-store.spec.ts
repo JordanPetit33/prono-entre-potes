@@ -111,6 +111,60 @@ describe('AppStore', () => {
       expect(store.players()).toBe(before);
     });
   });
+
+  describe('joueur actif', () => {
+    it('vaut null tant qu’aucun joueur n’existe', () => {
+      expect(store.activePlayer()).toBeNull();
+      expect(store.activePlayerId()).toBeNull();
+    });
+
+    it('devient automatiquement le premier joueur ajouté', () => {
+      store.addPlayer('Karim');
+      store.addPlayer('Léa');
+      expect(store.activePlayer()?.name).toBe('Karim');
+    });
+
+    it('setActivePlayer change le joueur actif', () => {
+      store.replaceData(sampleData());
+      store.setActivePlayer('p2');
+      expect(store.activePlayer()?.name).toBe('Léa');
+      expect(store.activePlayerId()).toBe('p2');
+    });
+
+    it('setActivePlayer ignore un identifiant inconnu', () => {
+      store.replaceData(sampleData());
+      store.setActivePlayer('p2');
+      store.setActivePlayer('inconnu');
+      expect(store.activePlayerId()).toBe('p2');
+    });
+
+    it('supprimer le joueur actif rend actif le premier joueur restant', () => {
+      store.replaceData(sampleData());
+      store.setActivePlayer('p1');
+      store.removePlayer('p1');
+      expect(store.activePlayerId()).toBe('p2');
+    });
+
+    it('supprimer le dernier joueur remet le joueur actif à null', () => {
+      store.replaceData(sampleData());
+      store.removePlayer('p1');
+      store.removePlayer('p2');
+      expect(store.activePlayer()).toBeNull();
+    });
+
+    it('supprimer un autre joueur ne change pas le joueur actif', () => {
+      store.replaceData(sampleData());
+      store.setActivePlayer('p2');
+      store.removePlayer('p1');
+      expect(store.activePlayerId()).toBe('p2');
+    });
+
+    it('suit le renommage du joueur actif', () => {
+      store.replaceData(sampleData());
+      store.renamePlayer('p1', 'Karim B');
+      expect(store.activePlayer()?.name).toBe('Karim B');
+    });
+  });
 });
 
 function sampleData(): AppData {

@@ -1,5 +1,8 @@
 <header>
   <h1>{{ title }}</h1>
+  @if (hasPlayers()) {
+    <app-player-picker />
+  }
 </header>
 <main>
   <router-outlet />

@@ -12,6 +12,21 @@ export class AppStore {
 
   readonly players = computed(() => this.data().players);
   readonly predictions = computed(() => this.data().predictions);
+  private readonly selectedPlayerId = signal<Id | null>(null);
+
+  /** Joueur choisi, ou à défaut le premier joueur (F-14). Null s'il n'y a aucun joueur. */
+  readonly activePlayer = computed(() => {
+    const players = this.players();
+    return players.find((p) => p.id === this.selectedPlayerId()) ?? players[0] ?? null;
+  });
+  readonly activePlayerId = computed(() => this.activePlayer()?.id ?? null);
+
+  /** Un identifiant inconnu est ignoré. */
+  setActivePlayer(id: Id): void {
+    if (this.players().some((p) => p.id === id)) {
+      this.selectedPlayerId.set(id);
+    }
+  }
 
   replaceData(data: AppData): void {
     this.data.set(data);

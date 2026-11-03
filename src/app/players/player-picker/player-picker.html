@@ -1,0 +1,36 @@
+@if (activePlayer(); as active) {
+  <div class="picker" (keydown.escape)="close()">
+    <button
+      type="button"
+      class="toggle"
+      aria-haspopup="true"
+      [attr.aria-expanded]="open()"
+      aria-controls="player-menu"
+      [attr.aria-label]="'Changer de joueur, joueur actuel : ' + active.name"
+      (click)="open.set(!open())"
+    >
+      <span class="avatar" aria-hidden="true">{{ initial(active.name) }}</span>
+      <span class="name">{{ active.name }}</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="m6 9 6 6 6-6" />
+      </svg>
+    </button>
+
+    @if (open()) {
+      <div id="player-menu" class="menu" data-testid="player-menu">
+        <ul>
+          @for (player of players(); track player.id) {
+            <li>
+              <button
+                type="button"
+                [attr.aria-current]="player.id === active.id ? 'true' : null"
+                (click)="choose(player.id)"
+              >{{ player.name }}</button>
+            </li>
+          }
+        </ul>
+        <a routerLink="/joueurs" (click)="close()">Gérer les joueurs</a>
+      </div>
+    }
+  </div>
+}

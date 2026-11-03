@@ -69,14 +69,14 @@ Pour chaque étape, la boucle est la même : envoyer le prompt, laisser l'agent 
 
 ## Étape 5 · Sélecteur de joueur actif
 
-- [ ] Tests du joueur actif écrits et en échec (null, premier joueur, `setActivePlayer`, id inconnu, suppression du joueur actif)
-- [ ] Tests du sélecteur écrits et en échec
-- [ ] `activePlayerId`, `activePlayer` et `setActivePlayer` dans `AppStore`
-- [ ] Composant `players/player-picker/` avec `aria-label`
-- [ ] Lien « Gérer les joueurs »
-- [ ] Sélecteur affiché dans l'en-tête dès qu'un joueur existe
-- [ ] `npm test` passe
-- [ ] `npm run build` compile
+- [x] Tests du joueur actif écrits et en échec (null, premier joueur, `setActivePlayer`, id inconnu, suppression du joueur actif)
+- [x] Tests du sélecteur écrits et en échec
+- [x] `activePlayerId`, `activePlayer` et `setActivePlayer` dans `AppStore`
+- [x] Composant `players/player-picker/` avec `aria-label`
+- [x] Lien « Gérer les joueurs »
+- [x] Sélecteur affiché dans l'en-tête dès qu'un joueur existe
+- [x] `npm test` passe
+- [x] `npm run build` compile
 - [ ] Vérifié avec `npm start` : changement de joueur actif
 - [ ] Commit
 
