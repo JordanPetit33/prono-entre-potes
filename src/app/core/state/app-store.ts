@@ -12,6 +12,7 @@ export type AddMatchResult =
   | { ok: true; match: Match }
   | { ok: false; errors: MatchFieldErrors }
   | { ok: false; error: string };
+export type UpdateMatchResult = { ok: true } | { ok: false; errors: MatchFieldErrors } | { ok: false; error: string };
 export type UpdateResult = { ok: true } | { ok: false; error: string };
 export type StorageStatus = LoadResult['status'];
 
@@ -35,6 +36,7 @@ export class AppStore {
   readonly players = computed(() => this.data().players);
   readonly predictions = computed(() => this.data().predictions);
   readonly matches = computed(() => this.data().matches);
+  readonly results = computed(() => this.data().results);
   /** Numéros des journées qui ont au moins un match, triés. */
   readonly matchdays = computed(() => matchdayNumbers(this.matches()));
 
@@ -150,6 +152,37 @@ export class AppStore {
     const match: Match = { id: crypto.randomUUID(), ...validation.match };
     const saved = this.commit((data) => ({ ...data, matches: [...data.matches, match] }));
     return saved.ok ? { ok: true, match } : saved;
+  }
+
+  /** Modifie un match tant que son résultat n'est pas saisi (F-22). */
+  updateMatch(id: Id, input: MatchInput): UpdateMatchResult {
+    if (!this.matches().some((m) => m.id === id)) {
+      return { ok: false, error: 'Match introuvable.' };
+    }
+    if (this.results().some((r) => r.matchId === id)) {
+      return { ok: false, error: 'Ce match a un résultat : il ne peut plus être modifié.' };
+    }
+    const validation = validateMatch(input);
+    if (!validation.ok) {
+      return validation;
+    }
+    return this.commit((data) => ({
+      ...data,
+      matches: data.matches.map((m) => (m.id === id ? { id, ...validation.match } : m)),
+    }));
+  }
+
+  /** Supprime le match, ses pronostics et son résultat (F-23). */
+  removeMatch(id: Id): UpdateResult {
+    if (!this.matches().some((m) => m.id === id)) {
+      return { ok: true };
+    }
+    return this.commit((data) => ({
+      ...data,
+      matches: data.matches.filter((m) => m.id !== id),
+      predictions: data.predictions.filter((p) => p.matchId !== id),
+      results: data.results.filter((r) => r.matchId !== id),
+    }));
   }
 
   /**

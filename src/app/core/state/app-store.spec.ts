@@ -191,6 +191,88 @@ describe('AppStore', () => {
       expect(store.matches()).toEqual([]);
     });
 
+    describe('updateMatch', () => {
+      const update = { matchday: 1, homeTeam: ' Lille OSC ', awayTeam: 'Nice', kickoff: '2026-11-15T17:00' };
+
+      it('modifie un match sans résultat, avec le nom nettoyé', () => {
+        store.replaceData(sampleData());
+        expect(store.updateMatch('m1', update)).toEqual({ ok: true });
+        expect(store.matches()).toEqual([
+          {
+            id: 'm1',
+            matchday: 1,
+            homeTeam: 'Lille OSC',
+            awayTeam: 'Nice',
+            kickoff: new Date('2026-11-15T17:00').toISOString(),
+          },
+        ]);
+      });
+
+      it('applique les règles de validation', () => {
+        store.replaceData(sampleData());
+        const before = store.matches();
+        expect(store.updateMatch('m1', { ...update, awayTeam: 'lille osc' })).toEqual({
+          ok: false,
+          errors: { awayTeam: 'Les deux équipes doivent être différentes.' },
+        });
+        expect(store.matches()).toBe(before);
+      });
+
+      it('refuse de modifier un match qui a un résultat', () => {
+        store.replaceData({
+          ...sampleData(),
+          results: [{ matchId: 'm1', score: { home: 2, away: 1 }, enteredAt: '2026-11-15T16:00:00.000Z' }],
+        });
+        const before = store.matches();
+        expect(store.updateMatch('m1', update)).toEqual({
+          ok: false,
+          error: 'Ce match a un résultat : il ne peut plus être modifié.',
+        });
+        expect(store.matches()).toBe(before);
+      });
+
+      it('refuse un match inconnu', () => {
+        expect(store.updateMatch('inconnu', update)).toEqual({ ok: false, error: 'Match introuvable.' });
+      });
+    });
+
+    describe('removeMatch', () => {
+      function dataWithTwoMatches(): AppData {
+        const data = sampleData();
+        return {
+          ...data,
+          matches: [
+            ...data.matches,
+            { id: 'm2', matchday: 1, homeTeam: 'Lens', awayTeam: 'Brest', kickoff: '2026-11-15T16:00:00.000Z' },
+          ],
+          predictions: [
+            ...data.predictions,
+            { playerId: 'p1', matchId: 'm2', score: { home: 0, away: 0 }, updatedAt: '2026-11-02T11:00:00.000Z' },
+          ],
+          results: [
+            { matchId: 'm1', score: { home: 2, away: 1 }, enteredAt: '2026-11-15T16:00:00.000Z' },
+            { matchId: 'm2', score: { home: 1, away: 0 }, enteredAt: '2026-11-15T18:00:00.000Z' },
+          ],
+        };
+      }
+
+      it('supprime le match, ses pronostics et son résultat, et rien d’autre', () => {
+        store.replaceData(dataWithTwoMatches());
+        expect(store.removeMatch('m1')).toEqual({ ok: true });
+        expect(store.matches().map((m) => m.id)).toEqual(['m2']);
+        expect(store.predictions().map((p) => p.matchId)).toEqual(['m2']);
+        expect(store.results().map((r) => r.matchId)).toEqual(['m2']);
+        expect(store.players()).toHaveLength(2);
+      });
+
+      it('ignore un match inconnu', () => {
+        store.replaceData(dataWithTwoMatches());
+        const before = store.matches();
+        expect(store.removeMatch('inconnu')).toEqual({ ok: true });
+        expect(store.matches()).toBe(before);
+      });
+    });
+
     it('matchdays renvoie les journées existantes, triées', () => {
       store.replaceData(sampleData());
       store.addMatch({ ...input, matchday: 5 });

@@ -35,14 +35,49 @@ h3 {
 
 .list li {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
   padding: 12px 0;
   border-bottom: 1px solid var(--border);
 }
 
 .list li:last-child {
   border-bottom: none;
+}
+
+.info {
+  flex: 1 1 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.actions,
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.form-actions .primary {
+  flex-grow: 1;
+}
+
+.secondary {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.danger-text {
+  color: var(--danger);
 }
 
 .teams {
@@ -93,6 +128,7 @@ input[aria-invalid='true'] {
 
 .primary {
   min-height: 48px;
+  padding: 0 16px;
   border: none;
   border-radius: 12px;
   background: var(--brand);

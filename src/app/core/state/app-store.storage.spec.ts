@@ -88,6 +88,15 @@ describe('AppStore et stockage', () => {
       expect(stored().matches.map((m) => m.homeTeam)).toEqual(['Lille', 'Lens']);
     });
 
+    it('modifier puis supprimer un match l’enregistre', () => {
+      const store = createStore({ [DATA_KEY]: JSON.stringify(sampleData()) });
+      store.updateMatch('m1', { matchday: 1, homeTeam: 'Lille OSC', awayTeam: 'Nice', kickoff: '2026-11-15T17:00' });
+      expect(stored().matches[0].homeTeam).toBe('Lille OSC');
+      store.removeMatch('m1');
+      expect(stored().matches).toEqual([]);
+      expect(stored().predictions).toEqual([]);
+    });
+
     it('une modification refusée n’enregistre rien', () => {
       const store = createStore();
       store.addPlayer('');

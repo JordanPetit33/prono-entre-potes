@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { createEmptyAppData } from '../core/models/app-data';
 import { AppStore } from '../core/state/app-store';
 import { DATA_KEY } from '../core/storage/storage-repository';
+import { toDatetimeLocal } from '../core/time/datetime-local';
 import { ResultsPage } from './results-page';
 
 describe('ResultsPage', () => {
@@ -70,6 +71,138 @@ describe('ResultsPage', () => {
     await render('4');
     expect(listedMatches()).toEqual([]);
     expect(el().textContent).toContain('Aucun match pour cette journée.');
+  });
+
+  function buttonByLabel(label: string): HTMLButtonElement | undefined {
+    return Array.from(el().querySelectorAll('button')).find(
+      (b) => (b.getAttribute('aria-label') ?? b.textContent?.trim()) === label,
+    );
+  }
+
+  async function click(label: string): Promise<void> {
+    const button = buttonByLabel(label);
+    if (!button) throw new Error(`Bouton « ${label} » introuvable`);
+    button.click();
+    await fixture.whenStable();
+  }
+
+  describe('modification', () => {
+    beforeEach(async () => {
+      seed();
+      await render('1');
+    });
+
+    it('chaque match sans résultat a un bouton « Modifier »', () => {
+      expect(buttonByLabel('Modifier Lille – Nice')).toBeDefined();
+      expect(buttonByLabel('Modifier Rennes – Monaco')).toBeDefined();
+    });
+
+    it('« Modifier » est absent quand le match a un résultat', async () => {
+      store.replaceData({
+        ...createEmptyAppData(),
+        matches: store.matches(),
+        results: [{ matchId: 'm2', score: { home: 2, away: 1 }, enteredAt: '2026-11-15T16:00:00.000Z' }],
+      });
+      await fixture.whenStable();
+      expect(buttonByLabel('Modifier Lille – Nice')).toBeUndefined();
+      expect(buttonByLabel('Modifier Rennes – Monaco')).toBeDefined();
+    });
+
+    it('« Modifier » remplit le formulaire avec le match', async () => {
+      await click('Modifier Lille – Nice');
+      expect(el().querySelector('form h3')?.textContent?.trim()).toBe('Modifier le match');
+      expect(field('home-team').value).toBe('Lille');
+      expect(field('away-team').value).toBe('Nice');
+      expect(field('kickoff').value).toBe(toDatetimeLocal('2026-11-15T14:00:00.000Z'));
+    });
+
+    it('enregistrer modifie le match et revient au mode ajout', async () => {
+      await click('Modifier Lille – Nice');
+      await type('home-team', 'Lille OSC');
+      await submit();
+      expect(listedMatches()).toEqual(['Lille OSC – Nice', 'Rennes – Monaco']);
+      expect(store.matches()).toHaveLength(3);
+      expect(el().querySelector('form h3')?.textContent?.trim()).toBe('Ajouter un match');
+      expect(field('home-team').value).toBe('');
+    });
+
+    it('affiche l’erreur sous le champ fautif et reste en mode modification', async () => {
+      await click('Modifier Lille – Nice');
+      await type('away-team', 'lille');
+      await submit();
+      expect(el().querySelector('#away-team-error')?.textContent?.trim()).toBe(
+        'Les deux équipes doivent être différentes.',
+      );
+      expect(el().querySelector('form h3')?.textContent?.trim()).toBe('Modifier le match');
+    });
+
+    it('« Annuler » revient au mode ajout sans rien changer', async () => {
+      await click('Modifier Lille – Nice');
+      await type('home-team', 'Autre');
+      await click('Annuler la modification');
+      expect(listedMatches()).toEqual(['Lille – Nice', 'Rennes – Monaco']);
+      expect(el().querySelector('form h3')?.textContent?.trim()).toBe('Ajouter un match');
+      expect(field('home-team').value).toBe('');
+    });
+  });
+
+  describe('suppression', () => {
+    const dialog = (): HTMLDialogElement => el().querySelector('dialog')!;
+
+    async function clickInDialog(label: string): Promise<void> {
+      const button = Array.from(dialog().querySelectorAll('button')).find((b) => b.textContent?.trim() === label);
+      if (!button) throw new Error(`Bouton « ${label} » introuvable dans la confirmation`);
+      button.click();
+      await fixture.whenStable();
+    }
+
+    beforeEach(async () => {
+      seed();
+      await render('1');
+    });
+
+    it('demande une confirmation qui précise que les pronostics et le résultat seront supprimés', async () => {
+      await click('Supprimer Lille – Nice');
+      expect(dialog().open).toBe(true);
+      expect(dialog().textContent).toContain('Lille – Nice');
+      expect(dialog().textContent).toContain('pronostics');
+      expect(dialog().textContent).toContain('résultat');
+    });
+
+    it('annuler ne supprime rien', async () => {
+      await click('Supprimer Lille – Nice');
+      await clickInDialog('Annuler');
+      expect(dialog().open).toBe(false);
+      expect(listedMatches()).toEqual(['Lille – Nice', 'Rennes – Monaco']);
+    });
+
+    it('confirmer supprime le match', async () => {
+      await click('Supprimer Lille – Nice');
+      await clickInDialog('Supprimer');
+      expect(dialog().open).toBe(false);
+      expect(listedMatches()).toEqual(['Rennes – Monaco']);
+    });
+
+    it('supprimer le match en cours de modification revient au mode ajout', async () => {
+      await click('Modifier Lille – Nice');
+      await click('Supprimer Lille – Nice');
+      await clickInDialog('Supprimer');
+      expect(el().querySelector('form h3')?.textContent?.trim()).toBe('Ajouter un match');
+    });
+  });
+
+  it('en lecture seule, « Modifier » et « Supprimer » sont désactivés', async () => {
+    window.localStorage.setItem(
+      DATA_KEY,
+      JSON.stringify({
+        ...createEmptyAppData(),
+        schemaVersion: 2,
+        matches: [{ id: 'm1', matchday: 1, homeTeam: 'Lille', awayTeam: 'Nice', kickoff: '2026-11-15T14:00:00.000Z' }],
+      }),
+    );
+    await render('1');
+    expect(buttonByLabel('Modifier Lille – Nice')?.disabled).toBe(true);
+    expect(buttonByLabel('Supprimer Lille – Nice')?.disabled).toBe(true);
   });
 
   describe('formulaire « Ajouter un match »', () => {

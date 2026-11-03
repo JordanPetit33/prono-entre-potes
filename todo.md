@@ -125,14 +125,14 @@ Pour chaque étape, la boucle est la même : envoyer le prompt, laisser l'agent 
 
 ## Étape 9 · Modification et suppression des matchs
 
-- [ ] Tests d'`updateMatch` écrits et en échec (modification, refus si résultat)
-- [ ] Tests de `removeMatch` écrits et en échec (cascade sur pronostics et résultat)
-- [ ] Tests de la page Résultats écrits et en échec (boutons, confirmation)
-- [ ] `updateMatch` et `removeMatch` dans `AppStore`
-- [ ] Mode édition réutilisant le formulaire de l'étape 8
-- [ ] Confirmation de suppression avec le composant existant
-- [ ] `npm test` passe
-- [ ] `npm run build` compile
+- [x] Tests d'`updateMatch` écrits et en échec (modification, refus si résultat)
+- [x] Tests de `removeMatch` écrits et en échec (cascade sur pronostics et résultat)
+- [x] Tests de la page Résultats écrits et en échec (boutons, confirmation)
+- [x] `updateMatch` et `removeMatch` dans `AppStore`
+- [x] Mode édition réutilisant le formulaire de l'étape 8
+- [x] Confirmation de suppression avec le composant existant
+- [x] `npm test` passe
+- [x] `npm run build` compile
 - [ ] Vérifié avec `npm start` : modification et suppression d'un match
 - [ ] Commit
 

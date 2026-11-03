@@ -5,8 +5,28 @@
   <ul class="card list">
     @for (match of matches(); track match.id) {
       <li>
-        <span class="teams" data-testid="match-teams">{{ match.homeTeam }} – {{ match.awayTeam }}</span>
-        <span class="kickoff">{{ formatKickoff(match.kickoff) }}</span>
+        <div class="info">
+          <span class="teams" data-testid="match-teams">{{ match.homeTeam }} – {{ match.awayTeam }}</span>
+          <span class="kickoff">{{ formatKickoff(match.kickoff) }}</span>
+        </div>
+        <div class="actions">
+          @if (!hasResult(match.id)) {
+            <button
+              type="button"
+              class="secondary"
+              [attr.aria-label]="'Modifier ' + label(match)"
+              [disabled]="readOnly()"
+              (click)="startEdit(match)"
+            >Modifier</button>
+          }
+          <button
+            type="button"
+            class="secondary danger-text"
+            [attr.aria-label]="'Supprimer ' + label(match)"
+            [disabled]="readOnly()"
+            (click)="toDelete.set(match)"
+          >Supprimer</button>
+        </div>
       </li>
     }
   </ul>
@@ -14,8 +34,8 @@
   <p class="empty">Aucun match pour cette journée.</p>
 }
 
-<form class="card add" (submit)="add($event)" novalidate>
-  <h3>Ajouter un match</h3>
+<form class="card add" (submit)="save($event)" novalidate>
+  <h3>{{ editingId() ? 'Modifier le match' : 'Ajouter un match' }}</h3>
 
   <div class="field">
     <label for="home-team">Équipe à domicile</label>
@@ -74,5 +94,22 @@
     <p class="error" role="alert">{{ error }}</p>
   }
 
-  <button type="submit" class="primary" [disabled]="readOnly()">Ajouter le match</button>
+  <div class="form-actions">
+    <button type="submit" class="primary" [disabled]="readOnly()">
+      {{ editingId() ? 'Enregistrer' : 'Ajouter le match' }}
+    </button>
+    @if (editingId()) {
+      <button type="button" class="secondary" aria-label="Annuler la modification" (click)="cancelEdit()">
+        Annuler
+      </button>
+    }
+  </div>
 </form>
+
+<app-confirm-dialog
+  [open]="toDelete() !== null"
+  [message]="deleteMessage()"
+  confirmLabel="Supprimer"
+  (confirmed)="confirmDelete()"
+  (cancelled)="toDelete.set(null)"
+/>
