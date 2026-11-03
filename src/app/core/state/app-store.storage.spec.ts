@@ -82,6 +82,12 @@ describe('AppStore et stockage', () => {
       expect(stored().predictions.map((p) => p.playerId)).toEqual(['p2']);
     });
 
+    it('ajouter un match l’enregistre', () => {
+      const store = createStore({ [DATA_KEY]: JSON.stringify(sampleData()) });
+      store.addMatch({ matchday: 2, homeTeam: 'Lens', awayTeam: 'Brest', kickoff: '2026-11-22T15:00' });
+      expect(stored().matches.map((m) => m.homeTeam)).toEqual(['Lille', 'Lens']);
+    });
+
     it('une modification refusée n’enregistre rien', () => {
       const store = createStore();
       store.addPlayer('');

@@ -1,9 +1,17 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { AppData, createEmptyAppData, Id, Player } from '../models/app-data';
+import { AppData, createEmptyAppData, Id, Match, Player } from '../models/app-data';
+import { matchdayNumbers } from '../scoring/matches';
 import { LoadResult, SaveError, StorageRepository } from '../storage/storage-repository';
+import { Clock } from '../time/clock';
+import { MatchFieldErrors, MatchInput, validateMatch } from '../validation/match';
 import { validatePlayerName } from '../validation/player-name';
 
 export type AddPlayerResult = { ok: true; player: Player } | { ok: false; error: string };
+/** Un refus de validation renvoie `errors` par champ ; un échec d'enregistrement renvoie `error`. */
+export type AddMatchResult =
+  | { ok: true; match: Match }
+  | { ok: false; errors: MatchFieldErrors }
+  | { ok: false; error: string };
 export type UpdateResult = { ok: true } | { ok: false; error: string };
 export type StorageStatus = LoadResult['status'];
 
@@ -19,12 +27,16 @@ const READ_ONLY_MESSAGE =
 @Injectable({ providedIn: 'root' })
 export class AppStore {
   private readonly repository = inject(StorageRepository);
+  private readonly clock = inject(Clock);
 
   private readonly data = signal<AppData>(createEmptyAppData());
   private readonly selectedPlayerId = signal<Id | null>(null);
 
   readonly players = computed(() => this.data().players);
   readonly predictions = computed(() => this.data().predictions);
+  readonly matches = computed(() => this.data().matches);
+  /** Numéros des journées qui ont au moins un match, triés. */
+  readonly matchdays = computed(() => matchdayNumbers(this.matches()));
 
   /** Résultat du chargement au démarrage. */
   readonly storageStatus = signal<StorageStatus>('ok');
@@ -93,7 +105,7 @@ export class AppStore {
     const player: Player = {
       id: crypto.randomUUID(),
       name: validation.name,
-      createdAt: new Date().toISOString(),
+      createdAt: this.clock.now().toISOString(),
     };
     const saved = this.commit((data) => ({ ...data, players: [...data.players, player] }));
     return saved.ok ? { ok: true, player } : saved;
@@ -128,6 +140,16 @@ export class AppStore {
       players: data.players.filter((p) => p.id !== id),
       predictions: data.predictions.filter((p) => p.playerId !== id),
     }));
+  }
+
+  addMatch(input: MatchInput): AddMatchResult {
+    const validation = validateMatch(input);
+    if (!validation.ok) {
+      return validation;
+    }
+    const match: Match = { id: crypto.randomUUID(), ...validation.match };
+    const saved = this.commit((data) => ({ ...data, matches: [...data.matches, match] }));
+    return saved.ok ? { ok: true, match } : saved;
   }
 
   /**

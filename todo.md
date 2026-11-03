@@ -110,16 +110,16 @@ Pour chaque étape, la boucle est la même : envoyer le prompt, laisser l'agent 
 
 ## Étape 8 · Création et liste des matchs
 
-- [ ] Tests de `validateMatch` écrits et en échec
-- [ ] Tests de `matchesOfMatchday` (tri F-24) écrits et en échec
-- [ ] Tests d'`addMatch` et `matchdays` écrits et en échec
-- [ ] Tests de la page Résultats écrits et en échec (liste, ajout, erreur sous le champ)
-- [ ] `validateMatch` et `matchesOfMatchday`, fonctions pures
-- [ ] `addMatch` et `matchdays` dans `AppStore`
-- [ ] Service `Clock` (`core/time/clock.ts`)
-- [ ] Page Résultats branchée sur la route et sur `AppStore`
-- [ ] `npm test` passe
-- [ ] `npm run build` compile
+- [x] Tests de `validateMatch` écrits et en échec
+- [x] Tests de `matchesOfMatchday` (tri F-24) écrits et en échec
+- [x] Tests d'`addMatch` et `matchdays` écrits et en échec
+- [x] Tests de la page Résultats écrits et en échec (liste, ajout, erreur sous le champ)
+- [x] `validateMatch` et `matchesOfMatchday`, fonctions pures
+- [x] `addMatch` et `matchdays` dans `AppStore`
+- [x] Service `Clock` (`core/time/clock.ts`)
+- [x] Page Résultats branchée sur la route et sur `AppStore`
+- [x] `npm test` passe
+- [x] `npm run build` compile
 - [ ] Vérifié avec `npm start` : création de matchs sur deux journées, ordre correct
 - [ ] Commit
 

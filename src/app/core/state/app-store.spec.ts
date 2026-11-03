@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { AppData, createEmptyAppData } from '../models/app-data';
+import { Clock } from '../time/clock';
 import { AppStore } from './app-store';
 
 describe('AppStore', () => {
@@ -163,6 +164,50 @@ describe('AppStore', () => {
       store.replaceData(sampleData());
       store.renamePlayer('p1', 'Karim B');
       expect(store.activePlayer()?.name).toBe('Karim B');
+    });
+  });
+
+  describe('matchs', () => {
+    const input = { matchday: 2, homeTeam: ' Lens ', awayTeam: 'Brest', kickoff: '2026-11-22T15:00' };
+
+    it('addMatch ajoute un match valide avec un identifiant', () => {
+      const result = store.addMatch(input);
+      expect(result.ok).toBe(true);
+      expect(store.matches()).toEqual([
+        {
+          id: expect.any(String),
+          matchday: 2,
+          homeTeam: 'Lens',
+          awayTeam: 'Brest',
+          kickoff: new Date('2026-11-22T15:00').toISOString(),
+        },
+      ]);
+      expect(result.ok && result.match).toEqual(store.matches()[0]);
+    });
+
+    it('addMatch refuse un match invalide sans changer l’état et renvoie les erreurs par champ', () => {
+      const result = store.addMatch({ ...input, awayTeam: 'lens' });
+      expect(result).toEqual({ ok: false, errors: { awayTeam: 'Les deux équipes doivent être différentes.' } });
+      expect(store.matches()).toEqual([]);
+    });
+
+    it('matchdays renvoie les journées existantes, triées', () => {
+      store.replaceData(sampleData());
+      store.addMatch({ ...input, matchday: 5 });
+      store.addMatch({ ...input, matchday: 2 });
+      expect(store.matchdays()).toEqual([1, 2, 5]);
+    });
+  });
+
+  describe('horloge', () => {
+    it('date la création d’un joueur avec l’horloge de l’application', () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [{ provide: Clock, useValue: { now: () => new Date('2026-11-03T09:30:00.000Z') } }],
+      });
+      const clockedStore = TestBed.inject(AppStore);
+      clockedStore.addPlayer('Karim');
+      expect(clockedStore.players()[0].createdAt).toBe('2026-11-03T09:30:00.000Z');
     });
   });
 });

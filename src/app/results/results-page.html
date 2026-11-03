@@ -1,0 +1,78 @@
+<h2>Résultats</h2>
+<p class="subtitle">Journée {{ matchday() }}</p>
+
+@if (matches().length > 0) {
+  <ul class="card list">
+    @for (match of matches(); track match.id) {
+      <li>
+        <span class="teams" data-testid="match-teams">{{ match.homeTeam }} – {{ match.awayTeam }}</span>
+        <span class="kickoff">{{ formatKickoff(match.kickoff) }}</span>
+      </li>
+    }
+  </ul>
+} @else {
+  <p class="empty">Aucun match pour cette journée.</p>
+}
+
+<form class="card add" (submit)="add($event)" novalidate>
+  <h3>Ajouter un match</h3>
+
+  <div class="field">
+    <label for="home-team">Équipe à domicile</label>
+    <input
+      id="home-team"
+      type="text"
+      autocomplete="off"
+      [value]="homeTeam()"
+      [disabled]="readOnly()"
+      (input)="homeTeam.set(valueOf($event))"
+      [attr.aria-invalid]="errors().homeTeam ? 'true' : null"
+      [attr.aria-describedby]="errors().homeTeam ? 'home-team-error' : null"
+    />
+    @if (errors().homeTeam; as error) {
+      <p id="home-team-error" class="error">{{ error }}</p>
+    }
+  </div>
+
+  <div class="field">
+    <label for="away-team">Équipe à l’extérieur</label>
+    <input
+      id="away-team"
+      type="text"
+      autocomplete="off"
+      [value]="awayTeam()"
+      [disabled]="readOnly()"
+      (input)="awayTeam.set(valueOf($event))"
+      [attr.aria-invalid]="errors().awayTeam ? 'true' : null"
+      [attr.aria-describedby]="errors().awayTeam ? 'away-team-error' : null"
+    />
+    @if (errors().awayTeam; as error) {
+      <p id="away-team-error" class="error">{{ error }}</p>
+    }
+  </div>
+
+  <div class="field">
+    <label for="kickoff">Coup d’envoi</label>
+    <input
+      id="kickoff"
+      type="datetime-local"
+      [value]="kickoff()"
+      [disabled]="readOnly()"
+      (input)="kickoff.set(valueOf($event))"
+      [attr.aria-invalid]="errors().kickoff ? 'true' : null"
+      [attr.aria-describedby]="errors().kickoff ? 'kickoff-error' : null"
+    />
+    @if (errors().kickoff; as error) {
+      <p id="kickoff-error" class="error">{{ error }}</p>
+    }
+  </div>
+
+  @if (errors().matchday; as error) {
+    <p class="error">{{ error }}</p>
+  }
+  @if (saveError(); as error) {
+    <p class="error" role="alert">{{ error }}</p>
+  }
+
+  <button type="submit" class="primary" [disabled]="readOnly()">Ajouter le match</button>
+</form>

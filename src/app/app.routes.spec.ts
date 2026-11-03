@@ -1,8 +1,8 @@
 import { Type } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
-import { routes } from './app.routes';
+import { appConfig } from './app.config';
 import { MatchdayPage } from './matchday/matchday-page';
 import { PlayersPage } from './players/players-page';
 import { ResultsPage } from './results/results-page';
@@ -14,7 +14,7 @@ describe('routes', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      providers: [provideRouter(routes)],
+      providers: appConfig.providers,
     });
     harness = await RouterTestingHarness.create();
     router = TestBed.inject(Router);
@@ -40,6 +40,11 @@ describe('routes', () => {
     await harness.navigateByUrl(url);
     expect(router.url).toBe(url);
     expect(routedPage()).toBeInstanceOf(page);
+  });
+
+  it('transmet le numéro de journée à la page Résultats', async () => {
+    await harness.navigateByUrl('/resultats/3');
+    expect((harness.routeNativeElement as HTMLElement).textContent).toContain('Journée 3');
   });
 
   it('redirige une route inconnue vers "/journee"', async () => {
