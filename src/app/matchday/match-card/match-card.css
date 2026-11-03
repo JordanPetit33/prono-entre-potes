@@ -153,7 +153,82 @@ span.box.final {
   margin: 0;
   color: var(--text-muted);
   font-size: 14px;
-  text-align: center;
+}
+
+.own {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.points {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.points.exact {
+  background: #ddf5c8;
+  color: #1f5b12;
+}
+
+.points.outcome {
+  background: #e6f0ff;
+  color: #1f4a8a;
+}
+
+.points.miss,
+.points.none {
+  background: #eef0ed;
+  color: #4a5650;
+}
+
+.others {
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.others h3 {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.others ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.others li {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.other-name {
+  font-weight: 600;
+}
+
+.other-score {
+  flex-grow: 1;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.other-points {
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .separator {

@@ -185,17 +185,17 @@ Pour chaque étape, la boucle est la même : envoyer le prompt, laisser l'agent 
 
 ## Étape 13 · Points et pronostics des autres
 
-- [ ] Tests d'`outcomeOf` écrits et en échec
-- [ ] Tests de `pointsFor` écrits et en échec : les huit cas de spec §8.1
-- [ ] Tests de `matchPoints` écrits et en échec (match sans résultat, joueur sans pronostic)
-- [ ] Tests de la pastille de points écrits et en échec
-- [ ] Tests de visibilité des pronostics des autres écrits et en échec (F-34)
-- [ ] `core/scoring/points.ts` avec `POINTS_EXACT` et `POINTS_OUTCOME` comme seules sources du barème
-- [ ] Points par joueur et par match calculés dans `AppStore`, jamais stockés
-- [ ] Pastille « +3 pts · score exact », « +1 pt · bonne issue », « 0 pt »
-- [ ] Pronostics des autres affichés après verrouillage
-- [ ] `npm test` passe
-- [ ] `npm run build` compile
+- [x] Tests d'`outcomeOf` écrits et en échec
+- [x] Tests de `pointsFor` écrits et en échec : les huit cas de spec §8.1
+- [x] Tests de `matchPoints` écrits et en échec (match sans résultat, joueur sans pronostic)
+- [x] Tests de la pastille de points écrits et en échec
+- [x] Tests de visibilité des pronostics des autres écrits et en échec (F-34)
+- [x] `core/scoring/points.ts` avec `POINTS_EXACT` et `POINTS_OUTCOME` comme seules sources du barème
+- [x] Points par joueur et par match calculés dans `AppStore`, jamais stockés
+- [x] Pastille « +3 pts · score exact », « +1 pt · bonne issue », « 0 pt »
+- [x] Pronostics des autres affichés après verrouillage
+- [x] `npm test` passe
+- [x] `npm run build` compile
 - [ ] Vérifié avec `npm start` : points corrects sur un match terminé, pronos des autres masqués avant le coup d'envoi
 - [ ] Commit
 

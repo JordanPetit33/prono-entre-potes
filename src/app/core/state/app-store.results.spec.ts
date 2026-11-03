@@ -78,6 +78,30 @@ describe('AppStore et résultats', () => {
     expect(store.updateMatch('m1', input)).toEqual({ ok: true });
   });
 
+  describe('points', () => {
+    it('sont calculés dès qu’un résultat est saisi, et jamais stockés', () => {
+      store.saveResult('m1', { home: 2, away: 1 });
+      expect(store.matchPoints()).toEqual([
+        { playerId: 'p1', matchId: 'm1', points: 0, kind: 'miss' },
+        { playerId: 'p2', matchId: 'm1', points: 3, kind: 'exact' },
+      ]);
+      expect(Object.keys(stored())).not.toContain('points');
+      expect(JSON.stringify(stored())).not.toContain('"kind"');
+    });
+
+    it('sont recalculés quand le résultat est corrigé', () => {
+      store.saveResult('m1', { home: 2, away: 1 });
+      store.saveResult('m1', { home: 1, away: 1 });
+      expect(store.matchPoints().map((p) => p.points)).toEqual([3, 0]);
+    });
+
+    it('disparaissent quand le résultat est supprimé', () => {
+      store.saveResult('m1', { home: 2, away: 1 });
+      store.removeResult('m1');
+      expect(store.matchPoints()).toEqual([]);
+    });
+  });
+
   it('après removeResult, le pronostic redevient possible si le match n’a pas commencé', () => {
     store.saveResult('m2', { home: 1, away: 1 });
     expect(store.savePrediction('m2', { home: 0, away: 0 }).ok).toBe(false);

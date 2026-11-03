@@ -1,6 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { AppData, createEmptyAppData, Id, Match, Player, Prediction, Result, Score } from '../models/app-data';
 import { matchdayNumbers } from '../scoring/matches';
+import { matchPoints } from '../scoring/points';
 import { LoadResult, SaveError, StorageRepository } from '../storage/storage-repository';
 import { Clock } from '../time/clock';
 import { isMatchLocked } from '../validation/lock';
@@ -39,6 +40,11 @@ export class AppStore {
   readonly predictions = computed(() => this.data().predictions);
   readonly matches = computed(() => this.data().matches);
   readonly results = computed(() => this.data().results);
+  /** Points de chaque joueur sur chaque match qui a un résultat. Recalculés, jamais stockés. */
+  readonly matchPoints = computed(() =>
+    matchPoints(this.players(), this.matches(), this.predictions(), this.results()),
+  );
+
   /** Pronostics du joueur actif, par identifiant de match. */
   readonly activePredictions = computed(() => {
     const playerId = this.activePlayerId();

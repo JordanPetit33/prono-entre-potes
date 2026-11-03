@@ -183,11 +183,89 @@ describe('MatchCard', () => {
       expect(el().querySelector('[data-testid="own-prediction"]')?.textContent?.trim()).toBe('Pas de prono');
     });
 
+    describe('points du joueur actif', () => {
+      const points = (): string | undefined => el().querySelector('[data-testid="points"]')?.textContent?.trim();
+
+      async function renderWithPrediction(home: number, away: number): Promise<void> {
+        await render({
+          ...sampleData(),
+          predictions: [{ playerId: 'p1', matchId: 'm1', score: { home, away }, updatedAt: NOW.toISOString() }],
+          results: [result],
+        });
+        fixture.componentInstance.result.set(result);
+        await fixture.whenStable();
+      }
+
+      it('score exact : « +3 pts · score exact »', async () => {
+        await renderWithPrediction(1, 0);
+        expect(points()).toBe('+3 pts · score exact');
+      });
+
+      it('bonne issue : « +1 pt · bonne issue »', async () => {
+        await renderWithPrediction(3, 1);
+        expect(points()).toBe('+1 pt · bonne issue');
+      });
+
+      it('mauvaise issue : « 0 pt »', async () => {
+        await renderWithPrediction(0, 2);
+        expect(points()).toBe('0 pt');
+      });
+
+      it('sans pronostic : « 0 pt »', async () => {
+        await render({ ...sampleData(), results: [result] });
+        fixture.componentInstance.result.set(result);
+        await fixture.whenStable();
+        expect(points()).toBe('0 pt');
+      });
+    });
+
     it('n’affiche aucun bouton', async () => {
       await render();
       fixture.componentInstance.result.set(result);
       await fixture.whenStable();
       expect(el().querySelectorAll('button')).toHaveLength(0);
+    });
+  });
+
+  describe('pronostics des autres joueurs (F-34)', () => {
+    const others = (): string[] =>
+      Array.from(el().querySelectorAll('[data-testid="others"] li')).map(
+        (li) => li.textContent?.replace(/\s+/g, ' ').trim() ?? '',
+      );
+
+    function dataWithOthers(extra: Partial<AppData> = {}): AppData {
+      return {
+        ...sampleData(),
+        players: [
+          { id: 'p1', name: 'Karim', createdAt: '2026-11-01T10:00:00.000Z' },
+          { id: 'p2', name: 'Léa', createdAt: '2026-11-01T10:01:00.000Z' },
+          { id: 'p3', name: 'Tom', createdAt: '2026-11-01T10:02:00.000Z' },
+        ],
+        predictions: [
+          { playerId: 'p1', matchId: 'm1', score: { home: 0, away: 0 }, updatedAt: NOW.toISOString() },
+          { playerId: 'p2', matchId: 'm1', score: { home: 1, away: 0 }, updatedAt: NOW.toISOString() },
+        ],
+        ...extra,
+      };
+    }
+
+    it('sont masqués tant que le match n’est pas verrouillé', async () => {
+      await render(dataWithOthers());
+      expect(el().querySelector('[data-testid="others"]')).toBeNull();
+      expect(el().textContent).not.toContain('Léa');
+    });
+
+    it('sont visibles une fois le match verrouillé, sans le joueur actif', async () => {
+      await render(dataWithOthers(), new Date(KICKOFF));
+      expect(others()).toEqual(['Léa 1 – 0', 'Tom pas de prono']);
+    });
+
+    it('affichent les points de chacun quand le résultat est saisi', async () => {
+      const result: Result = { matchId: 'm1', score: { home: 1, away: 0 }, enteredAt: NOW.toISOString() };
+      await render(dataWithOthers({ results: [result] }), new Date(KICKOFF));
+      fixture.componentInstance.result.set(result);
+      await fixture.whenStable();
+      expect(others()).toEqual(['Léa 1 – 0 +3 pts', 'Tom pas de prono 0 pt']);
     });
   });
 

@@ -78,13 +78,33 @@
     </div>
 
     @if (mode() === 'finished') {
-      <p class="own-prediction" data-testid="own-prediction">
-        @if (prediction(); as p) {
-          Ton prono : {{ p.score.home }} – {{ p.score.away }}
-        } @else {
-          Pas de prono
-        }
-      </p>
+      <div class="own">
+        <p class="own-prediction" data-testid="own-prediction">
+          @if (prediction(); as p) {
+            Ton prono : {{ p.score.home }} – {{ p.score.away }}
+          } @else {
+            Pas de prono
+          }
+        </p>
+        <span class="points" [class]="ownPoints()?.kind ?? 'none'" data-testid="points">{{ ownPointsLabel() }}</span>
+      </div>
+    }
+
+    @if (others(); as list) {
+      <section class="others" data-testid="others" aria-label="Pronostics des autres joueurs">
+        <h3>Pronos des autres</h3>
+        <ul>
+          @for (other of list; track other.playerId) {
+            <li>
+              <span class="other-name">{{ other.name }} </span>
+              <span class="other-score">{{ other.score ? other.score.home + ' – ' + other.score.away : 'pas de prono' }}</span>
+              @if (other.points !== null) {
+                <span class="other-points"> {{ pointsShort(other.points) }}</span>
+              }
+            </li>
+          }
+        </ul>
+      </section>
     }
 
     @if (error(); as message) {

@@ -1,5 +1,6 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
-import { Match, Prediction, Result } from '../../core/models/app-data';
+import { Id, Match, Prediction, Result, Score } from '../../core/models/app-data';
+import { MatchPoints } from '../../core/scoring/points';
 import { AppStore } from '../../core/state/app-store';
 import { formatKickoff } from '../../core/time/format-kickoff';
 import { timeUntil } from '../../core/time/time-until';
@@ -11,6 +12,21 @@ import { parseScore } from '../../core/validation/score';
  * `locked` : verrouillé sans résultat, `finished` : résultat saisi.
  */
 type CardMode = 'input' | 'saved' | 'locked' | 'finished';
+
+/** Pronostic d'un autre joueur, affiché une fois le match verrouillé (F-34). */
+interface OtherPrediction {
+  playerId: Id;
+  name: string;
+  score: Score | null;
+  /** Null tant que le résultat n'est pas saisi. */
+  points: number | null;
+}
+
+/** « 0 pt », « +1 pt », « +3 pts ». */
+function pointsShort(points: number): string {
+  if (points === 0) return '0 pt';
+  return `+${points} ${points > 1 ? 'pts' : 'pt'}`;
+}
 
 const STATUS_LABELS: Record<CardMode, string> = {
   input: 'À saisir',
@@ -55,6 +71,34 @@ export class MatchCard {
       : null,
   );
 
+  /** Points du joueur actif sur ce match, une fois le résultat saisi. */
+  protected readonly ownPoints = computed((): MatchPoints | null => this.pointsOf(this.store.activePlayerId()));
+  protected readonly ownPointsLabel = computed(() => {
+    const own = this.ownPoints();
+    if (!own || own.points === 0) return '0 pt';
+    const detail = own.kind === 'exact' ? 'score exact' : 'bonne issue';
+    return `${pointsShort(own.points)} · ${detail}`;
+  });
+
+  /** Pronostics des autres joueurs : visibles seulement une fois le match verrouillé (F-34). */
+  protected readonly others = computed((): OtherPrediction[] | null => {
+    if (this.mode() !== 'locked' && this.mode() !== 'finished') return null;
+    const activeId = this.store.activePlayerId();
+    const matchId = this.match().id;
+    const list = this.store
+      .players()
+      .filter((player) => player.id !== activeId)
+      .map((player) => ({
+        playerId: player.id,
+        name: player.name,
+        score: this.store.predictions().find((p) => p.playerId === player.id && p.matchId === matchId)?.score ?? null,
+        points: this.pointsOf(player.id)?.points ?? null,
+      }));
+    return list.length > 0 ? list : null;
+  });
+
+  protected readonly pointsShort = pointsShort;
+
   protected save(event: Event): void {
     event.preventDefault();
     if (this.mode() !== 'input') return;
@@ -92,6 +136,11 @@ export class MatchCard {
 
   protected valueOf(event: Event): string {
     return (event.target as HTMLInputElement).value;
+  }
+
+  private pointsOf(playerId: Id | null): MatchPoints | null {
+    const matchId = this.match().id;
+    return this.store.matchPoints().find((p) => p.playerId === playerId && p.matchId === matchId) ?? null;
   }
 
   private reset(): void {
