@@ -14,15 +14,15 @@ Pour chaque étape, la boucle est la même : envoyer le prompt, laisser l'agent 
 
 ## Étape 1 · Initialiser le projet Angular
 
-- [ ] Liste des paquets et versions présentée par l'agent
-- [ ] Accord donné pour l'installation des dépendances
-- [ ] Projet Angular généré dans le dossier courant (standalone, routage, CSS, strict, sans SSR)
-- [ ] Fichiers existants intacts (README.md, AGENTS.md, PLAN.md, PROMPTS.md, spec.md, prompt_plan.md, todo.md, .vscode/)
-- [ ] Scripts `start`, `test` et `build` présents dans `package.json`
-- [ ] Test du titre « Prono entre potes » écrit et en échec
-- [ ] Gabarit de démonstration remplacé par un composant racine minimal avec `<router-outlet>`
-- [ ] `npm test` passe
-- [ ] `npm run build` compile
+- [x] Liste des paquets et versions présentée par l'agent
+- [x] Accord donné pour l'installation des dépendances
+- [x] Projet Angular généré dans le dossier courant (standalone, routage, CSS, strict, sans SSR)
+- [x] Fichiers existants intacts (README.md, AGENTS.md, PLAN.md, PROMPTS.md, spec.md, prompt_plan.md, todo.md, .vscode/)
+- [x] Scripts `start`, `test` et `build` présents dans `package.json`
+- [x] Test du titre « Prono entre potes » écrit et en échec
+- [x] Gabarit de démonstration remplacé par un composant racine minimal avec `<router-outlet>`
+- [x] `npm test` passe
+- [x] `npm run build` compile
 - [ ] Vérifié avec `npm start` : le titre s'affiche
 - [ ] Commit
 
