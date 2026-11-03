@@ -27,6 +27,7 @@ export class MatchdayPage {
   readonly numero = input<string>();
 
   protected readonly hasPlayers = computed(() => this.store.players().length > 0);
+  protected readonly competitionName = this.store.competitionName;
   protected readonly matchday = computed(() => {
     const n = Number(this.numero());
     return Number.isInteger(n) && n >= 1 ? n : 1;

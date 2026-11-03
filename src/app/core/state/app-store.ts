@@ -25,6 +25,8 @@ export const SAVE_ERROR_MESSAGES: Record<SaveError, string> = {
   unavailable: 'Le stockage n’est pas accessible : la modification n’a pas été enregistrée.',
 };
 
+export const COMPETITION_NAME_MAX_LENGTH = 40;
+
 const READ_ONLY_MESSAGE =
   'Ces données viennent d’une version plus récente de l’application : mettez-la à jour pour les modifier.';
 
@@ -37,6 +39,7 @@ export class AppStore {
   private readonly data = signal<AppData>(createEmptyAppData());
   private readonly selectedPlayerId = signal<Id | null>(null);
 
+  readonly competitionName = computed(() => this.data().competition.name);
   readonly players = computed(() => this.data().players);
   readonly predictions = computed(() => this.data().predictions);
   readonly matches = computed(() => this.data().matches);
@@ -112,6 +115,21 @@ export class AppStore {
       this.selectedPlayerId.set(id);
       this.repository.saveActivePlayer(id);
     }
+  }
+
+  /** Renomme la compétition (F-01) : 1 à 40 caractères, sans les espaces de début et de fin. */
+  renameCompetition(name: string): UpdateResult {
+    const trimmed = name.trim();
+    if (trimmed === '') {
+      return { ok: false, error: 'Le nom de la compétition est obligatoire.' };
+    }
+    if (Array.from(trimmed).length > COMPETITION_NAME_MAX_LENGTH) {
+      return {
+        ok: false,
+        error: `Le nom de la compétition ne doit pas dépasser ${COMPETITION_NAME_MAX_LENGTH} caractères.`,
+      };
+    }
+    return this.commit((data) => ({ ...data, competition: { ...data.competition, name: trimmed } }));
   }
 
   addPlayer(name: string): AddPlayerResult {

@@ -44,7 +44,7 @@ Les identifiants `F-xx` servent à relier les besoins aux tests (section 8).
 
 ### 3.1 Compétition
 
-- **F-01** — La compétition a un nom modifiable (par défaut : « Ma compétition »).
+- **F-01** — La compétition a un nom modifiable (par défaut : « Ma compétition »), de 1 à 40 caractères, sans les espaces de début et de fin. Il s'affiche dans l'en-tête de la journée et se modifie depuis l'écran Joueurs.
 - **F-02** — Les matchs sont regroupés par journée, numérotée à partir de 1.
 
 ### 3.2 Joueurs

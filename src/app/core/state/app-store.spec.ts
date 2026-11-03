@@ -281,6 +281,48 @@ describe('AppStore', () => {
     });
   });
 
+  describe('compétition', () => {
+    it('a pour nom par défaut « Ma compétition »', () => {
+      expect(store.competitionName()).toBe('Ma compétition');
+    });
+
+    it('renameCompetition enregistre le nom sans les espaces de début et de fin', () => {
+      expect(store.renameCompetition('  Ligue 1  ')).toEqual({ ok: true });
+      expect(store.competitionName()).toBe('Ligue 1');
+    });
+
+    it('accepte un nom de 1 caractère', () => {
+      expect(store.renameCompetition('L')).toEqual({ ok: true });
+      expect(store.competitionName()).toBe('L');
+    });
+
+    it('accepte un nom de 40 caractères', () => {
+      const name = 'é'.repeat(40);
+      expect(store.renameCompetition(name)).toEqual({ ok: true });
+      expect(store.competitionName()).toBe(name);
+    });
+
+    it('refuse un nom de 41 caractères sans changer le nom', () => {
+      expect(store.renameCompetition('a'.repeat(41))).toEqual({
+        ok: false,
+        error: 'Le nom de la compétition ne doit pas dépasser 40 caractères.',
+      });
+      expect(store.competitionName()).toBe('Ma compétition');
+    });
+
+    it('refuse un nom vide ou fait d’espaces sans changer le nom', () => {
+      const error = { ok: false, error: 'Le nom de la compétition est obligatoire.' };
+      expect(store.renameCompetition('')).toEqual(error);
+      expect(store.renameCompetition('   ')).toEqual(error);
+      expect(store.competitionName()).toBe('Ma compétition');
+    });
+
+    it('lit le nom des données chargées', () => {
+      store.replaceData({ ...sampleData(), competition: { name: 'Coupe des potes' } });
+      expect(store.competitionName()).toBe('Coupe des potes');
+    });
+  });
+
   describe('horloge', () => {
     it('date la création d’un joueur avec l’horloge de l’application', () => {
       TestBed.resetTestingModule();

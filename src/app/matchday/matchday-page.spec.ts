@@ -118,6 +118,15 @@ describe('MatchdayPage', () => {
       expect(standing?.textContent?.replace(/\s+/g, ' ')).toContain('1er · 0 pt');
     });
 
+    it('l’en-tête affiche le nom de la compétition', async () => {
+      TestBed.inject(AppStore).replaceData({ ...sampleData(), competition: { name: 'Coupe des potes' } });
+      const fixture = TestBed.createComponent(MatchdayPage);
+      fixture.componentRef.setInput('numero', '1');
+      await fixture.whenStable();
+      const el = fixture.nativeElement as HTMLElement;
+      expect(el.querySelector('[data-testid="competition-name"]')?.textContent?.trim()).toBe('Coupe des potes');
+    });
+
     it('sans match, invite à en ajouter dans l’écran Résultats', async () => {
       const el = await renderMatchday('7');
       expect(cards(el)).toEqual([]);

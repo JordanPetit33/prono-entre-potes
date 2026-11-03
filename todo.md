@@ -216,15 +216,15 @@ Pour chaque étape, la boucle est la même : envoyer le prompt, laisser l'agent 
 
 ## Étape 15 · Nom de la compétition et erreurs inattendues
 
-- [ ] Tests de `renameCompetition` écrits et en échec
-- [ ] Test du nom dans l'en-tête de journée écrit et en échec
-- [ ] Test de la section « Compétition » de la page Joueurs écrit et en échec
-- [ ] Test du gestionnaire d'erreurs global écrit et en échec
-- [ ] `renameCompetition` dans `AppStore`
-- [ ] `core/errors/app-error-handler.ts`, fourni dans `app.config.ts`
-- [ ] Message « Une erreur inattendue est survenue. » dans le composant racine
-- [ ] `npm test` passe
-- [ ] `npm run build` compile
+- [x] Tests de `renameCompetition` écrits et en échec
+- [x] Test du nom dans l'en-tête de journée écrit et en échec
+- [x] Test de la section « Compétition » de la page Joueurs écrit et en échec
+- [x] Test du gestionnaire d'erreurs global écrit et en échec
+- [x] `renameCompetition` dans `AppStore`
+- [x] `core/errors/app-error-handler.ts`, fourni dans `app.config.ts`
+- [x] Message « Une erreur inattendue est survenue. » dans le composant racine
+- [x] `npm test` passe
+- [x] `npm run build` compile
 - [ ] Vérifié avec `npm start` : renommage de la compétition
 - [ ] Commit
 

@@ -62,6 +62,29 @@
   <p class="empty">Aucun joueur pour l’instant.</p>
 }
 
+<section class="competition">
+  <h2>Compétition</h2>
+  <form class="card add" (submit)="saveCompetition($event)" novalidate>
+    <label for="competition-name">Nom de la compétition</label>
+    <div class="row">
+      <input
+        id="competition-name"
+        type="text"
+        autocomplete="off"
+        [value]="competitionName()"
+        [disabled]="readOnly()"
+        (input)="competitionName.set(valueOf($event))"
+        [attr.aria-invalid]="competitionError() ? 'true' : null"
+        [attr.aria-describedby]="competitionError() ? 'competition-name-error' : null"
+      />
+      <button type="submit" class="primary" [disabled]="readOnly()">Enregistrer</button>
+    </div>
+    @if (competitionError(); as error) {
+      <p id="competition-name-error" class="error">{{ error }}</p>
+    }
+  </form>
+</section>
+
 <app-confirm-dialog
   [open]="toDelete() !== null"
   [message]="deleteMessage()"

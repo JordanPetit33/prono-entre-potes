@@ -1,6 +1,11 @@
 <section class="header">
   <div class="row">
-    <h2>Journée {{ matchday() }}</h2>
+    <div class="titles">
+      @if (competition(); as name) {
+        <p class="competition" data-testid="competition-name">{{ name }}</p>
+      }
+      <h2>Journée {{ matchday() }}</h2>
+    </div>
     <div class="arrows">
       <button
         type="button"

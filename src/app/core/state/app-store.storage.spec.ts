@@ -97,6 +97,19 @@ describe('AppStore et stockage', () => {
       expect(stored().predictions).toEqual([]);
     });
 
+    it('renommer la compétition l’enregistre', () => {
+      const store = createStore({ [DATA_KEY]: JSON.stringify(sampleData()) });
+      store.renameCompetition('Ligue 1');
+      expect(stored().competition).toEqual({ name: 'Ligue 1' });
+      expect(stored().players).toEqual(sampleData().players);
+    });
+
+    it('un nom de compétition refusé n’enregistre rien', () => {
+      const store = createStore();
+      store.renameCompetition('  ');
+      expect(storage.getItem(DATA_KEY)).toBeNull();
+    });
+
     it('une modification refusée n’enregistre rien', () => {
       const store = createStore();
       store.addPlayer('');

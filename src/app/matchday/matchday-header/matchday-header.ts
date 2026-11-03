@@ -27,6 +27,8 @@ export class MatchdayHeader {
   readonly progress = input<Progress | null>(null);
   /** Classement du joueur actif, masqué quand null. */
   readonly standing = input<HeaderStanding | null>(null);
+  /** Nom de la compétition (F-01), masqué quand null. */
+  readonly competition = input<string | null>(null);
 
   /** Numéro de la journée demandée. */
   readonly navigate = output<number>();

@@ -121,6 +121,46 @@ describe('PlayersPage', () => {
     });
   });
 
+  describe('compétition', () => {
+    const competitionInput = (): HTMLInputElement => el().querySelector('#competition-name')!;
+    const competitionForm = (): HTMLFormElement => competitionInput().closest('form')!;
+
+    it('a une section « Compétition » avec le champ « Nom de la compétition » prérempli', () => {
+      const section = competitionForm().closest('section');
+      expect(section?.querySelector('h2')?.textContent?.trim()).toBe('Compétition');
+      expect(el().querySelector('label[for="competition-name"]')?.textContent?.trim()).toBe('Nom de la compétition');
+      expect(competitionInput().value).toBe('Ma compétition');
+    });
+
+    it('enregistre le nouveau nom', async () => {
+      await type(competitionInput(), '  Ligue 1 ');
+      await submit(competitionForm());
+      expect(store.competitionName()).toBe('Ligue 1');
+      expect(competitionInput().value).toBe('Ligue 1');
+      expect(el().querySelector('#competition-name-error')).toBeNull();
+    });
+
+    it('affiche le message d’erreur sous le champ quand le nom est refusé', async () => {
+      await type(competitionInput(), '   ');
+      await submit(competitionForm());
+      expect(store.competitionName()).toBe('Ma compétition');
+      expect(el().querySelector('#competition-name-error')?.textContent?.trim()).toBe(
+        'Le nom de la compétition est obligatoire.',
+      );
+      expect(competitionInput().getAttribute('aria-invalid')).toBe('true');
+      expect(competitionInput().getAttribute('aria-describedby')).toBe('competition-name-error');
+    });
+
+    it('efface le message d’erreur après un enregistrement réussi', async () => {
+      await type(competitionInput(), '');
+      await submit(competitionForm());
+      await type(competitionInput(), 'Ligue 1');
+      await submit(competitionForm());
+      expect(el().querySelector('#competition-name-error')).toBeNull();
+      expect(competitionInput().hasAttribute('aria-invalid')).toBe(false);
+    });
+  });
+
   describe('lecture seule', () => {
     beforeEach(async () => {
       TestBed.resetTestingModule();
@@ -139,6 +179,11 @@ describe('PlayersPage', () => {
     it('désactive le formulaire d’ajout', () => {
       expect(el().querySelector<HTMLInputElement>('#new-player-name')?.disabled).toBe(true);
       expect(buttonByLabel('Ajouter').disabled).toBe(true);
+    });
+
+    it('désactive le formulaire de la compétition', () => {
+      expect(el().querySelector<HTMLInputElement>('#competition-name')?.disabled).toBe(true);
+      expect(el().querySelector<HTMLButtonElement>('#competition-name ~ button[type="submit"]')?.disabled).toBe(true);
     });
 
     it('désactive le renommage et la suppression', () => {

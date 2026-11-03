@@ -12,6 +12,7 @@ describe('MatchdayHeader', () => {
     next: number | null;
     progress?: { done: number; total: number } | null;
     standing?: { rank: number; points: number; gap: string | null } | null;
+    competition?: string | null;
   }): Promise<void> {
     TestBed.configureTestingModule({ providers: [provideRouter([])] });
     fixture = TestBed.createComponent(MatchdayHeader);
@@ -29,6 +30,21 @@ describe('MatchdayHeader', () => {
   it('affiche « Journée <n> »', async () => {
     await render({ matchday: 12, previous: 11, next: 13 });
     expect(el().querySelector('h2')?.textContent?.trim()).toBe('Journée 12');
+  });
+
+  describe('nom de la compétition (F-01)', () => {
+    const competition = (): string | undefined =>
+      el().querySelector('[data-testid="competition-name"]')?.textContent?.trim();
+
+    it('affiche le nom de la compétition', async () => {
+      await render({ matchday: 1, previous: null, next: null, competition: 'Ligue 1' });
+      expect(competition()).toBe('Ligue 1');
+    });
+
+    it('est masqué sans nom', async () => {
+      await render({ matchday: 1, previous: null, next: null });
+      expect(competition()).toBeUndefined();
+    });
   });
 
   it('a des boutons « Journée précédente » et « Journée suivante »', async () => {

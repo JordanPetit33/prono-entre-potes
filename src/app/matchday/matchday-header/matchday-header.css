@@ -15,6 +15,21 @@
   gap: 12px;
 }
 
+.titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.competition {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #b9d3c6;
+  overflow-wrap: anywhere;
+}
+
 h2 {
   margin: 0;
   font-size: 28px;

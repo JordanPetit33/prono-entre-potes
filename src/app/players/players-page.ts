@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, linkedSignal, signal } from '@angular/core';
 import { Id, Player } from '../core/models/app-data';
 import { AppStore } from '../core/state/app-store';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
@@ -21,6 +21,10 @@ export class PlayersPage {
   protected readonly renamingId = signal<Id | null>(null);
   protected readonly renameValue = signal('');
   protected readonly renameError = signal<string | null>(null);
+
+  /** Champ du nom de la compétition, recalé sur le nom enregistré à chaque changement. */
+  protected readonly competitionName = linkedSignal(() => this.store.competitionName());
+  protected readonly competitionError = signal<string | null>(null);
 
   protected readonly toDelete = signal<Player | null>(null);
   protected readonly deleteMessage = computed(() => {
@@ -60,6 +64,17 @@ export class PlayersPage {
   protected cancelRename(): void {
     this.renamingId.set(null);
     this.renameError.set(null);
+  }
+
+  protected saveCompetition(event: Event): void {
+    event.preventDefault();
+    const result = this.store.renameCompetition(this.competitionName());
+    if (result.ok) {
+      this.competitionName.set(this.store.competitionName());
+      this.competitionError.set(null);
+    } else {
+      this.competitionError.set(result.error);
+    }
   }
 
   protected confirmDelete(): void {
