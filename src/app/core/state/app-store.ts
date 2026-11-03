@@ -1,18 +1,32 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { AppData, createEmptyAppData, Id, Player } from '../models/app-data';
+import { LoadResult, SaveError, StorageRepository } from '../storage/storage-repository';
 import { validatePlayerName } from '../validation/player-name';
 
 export type AddPlayerResult = { ok: true; player: Player } | { ok: false; error: string };
 export type UpdateResult = { ok: true } | { ok: false; error: string };
+export type StorageStatus = LoadResult['status'];
+
+const SAVE_ERROR_MESSAGES: Record<SaveError, string> = {
+  quota: 'L’espace de stockage est plein : la modification n’a pas été enregistrée.',
+  unavailable: 'Le stockage n’est pas accessible : la modification n’a pas été enregistrée.',
+};
 
 /** État de l'application. Les composants passent par ce service pour lire et modifier les données. */
 @Injectable({ providedIn: 'root' })
 export class AppStore {
+  private readonly repository = inject(StorageRepository);
+
   private readonly data = signal<AppData>(createEmptyAppData());
+  private readonly selectedPlayerId = signal<Id | null>(null);
 
   readonly players = computed(() => this.data().players);
   readonly predictions = computed(() => this.data().predictions);
-  private readonly selectedPlayerId = signal<Id | null>(null);
+
+  /** Résultat du chargement au démarrage. */
+  readonly storageStatus = signal<StorageStatus>('ok');
+  /** Dernier échec d'enregistrement, null si aucun. */
+  readonly storageError = signal<SaveError | null>(null);
 
   /** Joueur choisi, ou à défaut le premier joueur (F-14). Null s'il n'y a aucun joueur. */
   readonly activePlayer = computed(() => {
@@ -21,15 +35,26 @@ export class AppStore {
   });
   readonly activePlayerId = computed(() => this.activePlayer()?.id ?? null);
 
+  constructor() {
+    const loaded = this.repository.load();
+    this.storageStatus.set(loaded.status);
+    if (loaded.status === 'ok' || loaded.status === 'newer-version') {
+      this.data.set(loaded.data);
+    }
+    this.selectedPlayerId.set(this.repository.loadActivePlayer());
+  }
+
+  /** Remplace l'état en mémoire, sans l'enregistrer. */
+  replaceData(data: AppData): void {
+    this.data.set(data);
+  }
+
   /** Un identifiant inconnu est ignoré. */
   setActivePlayer(id: Id): void {
     if (this.players().some((p) => p.id === id)) {
       this.selectedPlayerId.set(id);
+      this.repository.saveActivePlayer(id);
     }
-  }
-
-  replaceData(data: AppData): void {
-    this.data.set(data);
   }
 
   addPlayer(name: string): AddPlayerResult {
@@ -45,8 +70,8 @@ export class AppStore {
       name: validation.name,
       createdAt: new Date().toISOString(),
     };
-    this.data.update((data) => ({ ...data, players: [...data.players, player] }));
-    return { ok: true, player };
+    const saved = this.commit((data) => ({ ...data, players: [...data.players, player] }));
+    return saved.ok ? { ok: true, player } : saved;
   }
 
   renamePlayer(id: Id, name: string): UpdateResult {
@@ -62,22 +87,40 @@ export class AppStore {
     if (!validation.ok) {
       return validation;
     }
-    this.data.update((data) => ({
+    return this.commit((data) => ({
       ...data,
       players: data.players.map((p) => (p.id === id ? { ...p, name: validation.name } : p)),
     }));
-    return { ok: true };
   }
 
   /** Supprime le joueur et ses pronostics (F-13). */
-  removePlayer(id: Id): void {
+  removePlayer(id: Id): UpdateResult {
     if (!this.players().some((p) => p.id === id)) {
-      return;
+      return { ok: true };
     }
-    this.data.update((data) => ({
+    return this.commit((data) => ({
       ...data,
       players: data.players.filter((p) => p.id !== id),
       predictions: data.predictions.filter((p) => p.playerId !== id),
     }));
+  }
+
+  /**
+   * Applique une modification validée. Elle n'est gardée en mémoire que si l'enregistrement réussit.
+   * Les données ne sont enregistrées que si elles ont été chargées normalement : des données illisibles
+   * ou écrites par une version plus récente ne sont jamais écrasées, et sans stockage on reste en mémoire.
+   */
+  private commit(change: (data: AppData) => AppData): UpdateResult {
+    const next = change(this.data());
+    if (this.storageStatus() === 'ok') {
+      const saved = this.repository.save(next);
+      if (!saved.ok) {
+        this.storageError.set(saved.error);
+        return { ok: false, error: SAVE_ERROR_MESSAGES[saved.error] };
+      }
+    }
+    this.storageError.set(null);
+    this.data.set(next);
+    return { ok: true };
   }
 }

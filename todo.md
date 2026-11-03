@@ -82,15 +82,15 @@ Pour chaque étape, la boucle est la même : envoyer le prompt, laisser l'agent 
 
 ## Étape 6 · Dépôt de stockage et branchement de l'état
 
-- [ ] Tests du dépôt écrits et en échec, avec un faux `Storage` : vide, aller-retour, JSON invalide, structure incorrecte, version plus récente, quota, stockage inaccessible, joueur actif
-- [ ] Tests d'`AppStore` écrits et en échec : chargement, sauvegarde après modification, retour arrière si la sauvegarde échoue, joueur actif relu
-- [ ] `StorageRepository` avec `InjectionToken` pour le `Storage`
-- [ ] Validation de structure écrite à la main
-- [ ] Copie de secours dans `prono-entre-potes:data-backup`
-- [ ] Signaux `storageStatus` et `storageError` dans `AppStore`
-- [ ] `AppStore` branché sur le dépôt
-- [ ] `npm test` passe
-- [ ] `npm run build` compile
+- [x] Tests du dépôt écrits et en échec, avec un faux `Storage` : vide, aller-retour, JSON invalide, structure incorrecte, version plus récente, quota, stockage inaccessible, joueur actif
+- [x] Tests d'`AppStore` écrits et en échec : chargement, sauvegarde après modification, retour arrière si la sauvegarde échoue, joueur actif relu
+- [x] `StorageRepository` avec `InjectionToken` pour le `Storage`
+- [x] Validation de structure écrite à la main
+- [x] Copie de secours dans `prono-entre-potes:data-backup`
+- [x] Signaux `storageStatus` et `storageError` dans `AppStore`
+- [x] `AppStore` branché sur le dépôt
+- [x] `npm test` passe
+- [x] `npm run build` compile
 - [ ] Vérifié avec `npm start` : un joueur créé est toujours là après rechargement
 - [ ] Vérifié : le joueur actif est conservé après rechargement
 - [ ] Commit

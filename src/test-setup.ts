@@ -10,3 +10,8 @@ if (typeof HTMLDialogElement !== 'undefined' && !HTMLDialogElement.prototype.sho
     }
   };
 }
+
+// Chaque test part d'un localStorage vide.
+beforeEach(() => {
+  window.localStorage.clear();
+});
