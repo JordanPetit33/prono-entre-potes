@@ -3,16 +3,9 @@ import { Id, Match } from '../core/models/app-data';
 import { matchesOfMatchday } from '../core/scoring/matches';
 import { AppStore } from '../core/state/app-store';
 import { toDatetimeLocal } from '../core/time/datetime-local';
+import { formatKickoff } from '../core/time/format-kickoff';
 import { MatchFieldErrors } from '../core/validation/match';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
-
-const kickoffFormat = new Intl.DateTimeFormat('fr-FR', {
-  weekday: 'short',
-  day: 'numeric',
-  month: 'short',
-  hour: '2-digit',
-  minute: '2-digit',
-});
 
 /** Gestion des matchs d'une journée et saisie des résultats (F-70). */
 @Component({
@@ -112,9 +105,7 @@ export class ResultsPage {
     return `${match.homeTeam} – ${match.awayTeam}`;
   }
 
-  protected formatKickoff(iso: string): string {
-    return kickoffFormat.format(new Date(iso));
-  }
+  protected readonly formatKickoff = formatKickoff;
 
   protected valueOf(event: Event): string {
     return (event.target as HTMLInputElement).value;

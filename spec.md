@@ -113,7 +113,7 @@ L'écran principal suit la maquette réalisée à l'étape 0 (capture à joindre
 - **F-71** — On change de journée avec des flèches « précédente / suivante ».
 - **F-72** — **Journée affichée par défaut** : la première journée qui contient un match non verrouillé. S'il n'y en a aucune, la dernière journée.
 - **F-73** — Gestion des joueurs accessible depuis le sélecteur de joueur (« Gérer les joueurs »).
-- **F-74** — Tous les textes affichés sont en français. Dates et heures au format `fr-FR`, fuseau horaire de l'appareil.
+- **F-74** — Tous les textes affichés sont en français. Dates et heures au format `JJ/MM/AAAA HH:mm` (ex. `15/11/2026 15:00`), fuseau horaire de l’appareil.
 
 ---
 

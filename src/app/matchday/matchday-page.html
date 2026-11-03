@@ -1,7 +1,26 @@
 @if (hasPlayers()) {
   <h2>Journée</h2>
+  <p class="subtitle">Journée {{ matchday() }}</p>
+
+  @if (matches().length > 0) {
+    <div class="cards">
+      @for (match of matches(); track match.id) {
+        <app-match-card
+          [match]="match"
+          [prediction]="predictions().get(match.id) ?? null"
+          [result]="results().get(match.id) ?? null"
+          [now]="now()"
+        />
+      }
+    </div>
+  } @else {
+    <section class="panel">
+      <p>Aucun match pour cette journée.</p>
+      <a class="button" [routerLink]="['/resultats', matchday()]">Ajouter des matchs</a>
+    </section>
+  }
 } @else {
-  <section class="welcome">
+  <section class="panel welcome">
     <h2>Bienvenue</h2>
     <p>Pour commencer, ajoutez les amis qui vont pronostiquer.</p>
     <a class="button" routerLink="/joueurs">Créer les joueurs</a>

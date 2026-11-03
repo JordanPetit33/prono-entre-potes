@@ -1,10 +1,12 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { AppData, createEmptyAppData, Id, Match, Player } from '../models/app-data';
+import { AppData, createEmptyAppData, Id, Match, Player, Prediction, Score } from '../models/app-data';
 import { matchdayNumbers } from '../scoring/matches';
 import { LoadResult, SaveError, StorageRepository } from '../storage/storage-repository';
 import { Clock } from '../time/clock';
+import { isMatchLocked } from '../validation/lock';
 import { MatchFieldErrors, MatchInput, validateMatch } from '../validation/match';
 import { validatePlayerName } from '../validation/player-name';
+import { isValidScoreValue, SCORE_ERROR } from '../validation/score';
 
 export type AddPlayerResult = { ok: true; player: Player } | { ok: false; error: string };
 /** Un refus de validation renvoie `errors` par champ ; un échec d'enregistrement renvoie `error`. */
@@ -37,6 +39,12 @@ export class AppStore {
   readonly predictions = computed(() => this.data().predictions);
   readonly matches = computed(() => this.data().matches);
   readonly results = computed(() => this.data().results);
+  /** Pronostics du joueur actif, par identifiant de match. */
+  readonly activePredictions = computed(() => {
+    const playerId = this.activePlayerId();
+    return new Map(this.predictions().filter((p) => p.playerId === playerId).map((p) => [p.matchId, p]));
+  });
+
   /** Numéros des journées qui ont au moins un match, triés. */
   readonly matchdays = computed(() => matchdayNumbers(this.matches()));
 
@@ -169,6 +177,36 @@ export class AppStore {
     return this.commit((data) => ({
       ...data,
       matches: data.matches.map((m) => (m.id === id ? { id, ...validation.match } : m)),
+    }));
+  }
+
+  /**
+   * Enregistre le pronostic du joueur actif. Il remplace son pronostic précédent sur ce match,
+   * jamais celui d'un autre joueur (F-32). Refusé une fois le match verrouillé (F-33).
+   */
+  savePrediction(matchId: Id, score: Score): UpdateResult {
+    const playerId = this.activePlayerId();
+    if (playerId === null) {
+      return { ok: false, error: 'Choisissez d’abord un joueur.' };
+    }
+    const match = this.matches().find((m) => m.id === matchId);
+    if (!match) {
+      return { ok: false, error: 'Match introuvable.' };
+    }
+    const result = this.results().find((r) => r.matchId === matchId) ?? null;
+    if (isMatchLocked(match, result, this.clock.now())) {
+      return { ok: false, error: 'Ce match a commencé, le pronostic est verrouillé.' };
+    }
+    if (!isValidScoreValue(score.home) || !isValidScoreValue(score.away)) {
+      return { ok: false, error: SCORE_ERROR };
+    }
+    const prediction: Prediction = { playerId, matchId, score, updatedAt: this.clock.now().toISOString() };
+    return this.commit((data) => ({
+      ...data,
+      predictions: [
+        ...data.predictions.filter((p) => !(p.playerId === playerId && p.matchId === matchId)),
+        prediction,
+      ],
     }));
   }
 

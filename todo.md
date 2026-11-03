@@ -138,17 +138,17 @@ Pour chaque étape, la boucle est la même : envoyer le prompt, laisser l'agent 
 
 ## Étape 10 · Pronostics et verrouillage
 
-- [ ] Tests de `parseScoreValue` écrits et en échec
-- [ ] Tests d'`isMatchLocked` écrits et en échec (avant, à l'heure exacte, avec résultat)
-- [ ] Tests de `savePrediction` écrits et en échec (enregistrement, remplacement, autre joueur intact, match verrouillé, sans joueur actif)
-- [ ] Tests de la carte de match écrits et en échec (À saisir, Prono enregistré, Verrouillé, heure, temps restant, score invalide)
-- [ ] `parseScoreValue` et `isMatchLocked`, fonctions pures
-- [ ] `savePrediction` et pronostics du joueur actif dans `AppStore`
-- [ ] Composant `matchday/match-card/`
-- [ ] Champs de score avec libellé « Buts de <équipe> » et `inputmode="numeric"`
-- [ ] Page `/journee/:numero` qui affiche les cartes
-- [ ] `npm test` passe
-- [ ] `npm run build` compile
+- [x] Tests de `parseScoreValue` écrits et en échec
+- [x] Tests d'`isMatchLocked` écrits et en échec (avant, à l'heure exacte, avec résultat)
+- [x] Tests de `savePrediction` écrits et en échec (enregistrement, remplacement, autre joueur intact, match verrouillé, sans joueur actif)
+- [x] Tests de la carte de match écrits et en échec (À saisir, Prono enregistré, Verrouillé, heure, temps restant, score invalide)
+- [x] `parseScoreValue` et `isMatchLocked`, fonctions pures
+- [x] `savePrediction` et pronostics du joueur actif dans `AppStore`
+- [x] Composant `matchday/match-card/`
+- [x] Champs de score avec libellé « Buts de <équipe> » et `inputmode="numeric"`
+- [x] Page `/journee/:numero` qui affiche les cartes
+- [x] `npm test` passe
+- [x] `npm run build` compile
 - [ ] Vérifié avec `npm start` : saisie et modification d'un prono, match passé verrouillé
 - [ ] Vérifié : le prono d'un joueur n'écrase pas celui d'un autre
 - [ ] Commit

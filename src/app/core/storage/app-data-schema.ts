@@ -1,4 +1,5 @@
 import { AppData, Match, Player, Prediction, Result, Score } from '../models/app-data';
+import { isValidScoreValue } from '../validation/score';
 
 // Vérification de structure des données relues depuis le stockage. Écrite à la main : pas de bibliothèque.
 
@@ -13,7 +14,7 @@ function isString(value: unknown): value is string {
 }
 
 function isScoreValue(value: unknown): value is number {
-  return Number.isInteger(value) && (value as number) >= 0 && (value as number) <= 99;
+  return typeof value === 'number' && isValidScoreValue(value);
 }
 
 function isScore(value: unknown): value is Score {

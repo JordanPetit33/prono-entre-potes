@@ -1,0 +1,92 @@
+<article class="card" [class.todo]="mode() === 'input' && !prediction()">
+  <form (submit)="save($event)" novalidate>
+    <div class="meta">
+      <span class="time">
+        {{ kickoff() }}
+        @if (remaining(); as left) {
+          · clôture dans {{ left }}
+        }
+      </span>
+      <span class="chip" [class]="mode()" data-testid="status">
+        @if (mode() === 'saved') {
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 6 9 17l-5-5" />
+          </svg>
+        }
+        {{ statusLabel() }}
+      </span>
+    </div>
+
+    <div class="teams">
+      <div class="team">
+        <span class="crest" aria-hidden="true">{{ initials(match().homeTeam) }}</span>
+        <span class="name" data-testid="team-name">{{ match().homeTeam }}</span>
+      </div>
+
+      @if (mode() === 'saved') {
+        <div class="score" data-testid="prediction">
+          <span class="box">{{ prediction()?.score?.home }}</span>
+          <span class="separator">–</span>
+          <span class="box">{{ prediction()?.score?.away }}</span>
+        </div>
+      } @else {
+        <div class="score">
+          <label class="sr-only" [for]="'home-score-' + match().id">Buts de {{ match().homeTeam }}</label>
+          <input
+            [id]="'home-score-' + match().id"
+            class="box"
+            type="text"
+            inputmode="numeric"
+            maxlength="2"
+            autocomplete="off"
+            placeholder="–"
+            [value]="mode() === 'locked' ? (prediction()?.score?.home ?? '') : home()"
+            [disabled]="mode() === 'locked' || readOnly()"
+            (input)="home.set(valueOf($event))"
+            [attr.aria-invalid]="error() ? 'true' : null"
+            [attr.aria-describedby]="error() ? 'score-error-' + match().id : null"
+          />
+          <span class="separator">–</span>
+          <label class="sr-only" [for]="'away-score-' + match().id">Buts de {{ match().awayTeam }}</label>
+          <input
+            [id]="'away-score-' + match().id"
+            class="box"
+            type="text"
+            inputmode="numeric"
+            maxlength="2"
+            autocomplete="off"
+            placeholder="–"
+            [value]="mode() === 'locked' ? (prediction()?.score?.away ?? '') : away()"
+            [disabled]="mode() === 'locked' || readOnly()"
+            (input)="away.set(valueOf($event))"
+            [attr.aria-invalid]="error() ? 'true' : null"
+            [attr.aria-describedby]="error() ? 'score-error-' + match().id : null"
+          />
+        </div>
+      }
+
+      <div class="team">
+        <span class="crest" aria-hidden="true">{{ initials(match().awayTeam) }}</span>
+        <span class="name" data-testid="team-name">{{ match().awayTeam }}</span>
+      </div>
+    </div>
+
+    @if (error(); as message) {
+      <p [id]="'score-error-' + match().id" class="error" role="alert">{{ message }}</p>
+    }
+
+    @switch (mode()) {
+      @case ('input') {
+        <div class="actions">
+          <button type="submit" class="primary" [disabled]="readOnly()">Valider mon prono</button>
+          @if (editing()) {
+            <button type="button" class="secondary" (click)="cancelEdit()">Annuler</button>
+          }
+        </div>
+      }
+      @case ('saved') {
+        <button type="button" class="link" [disabled]="readOnly()" (click)="startEdit()">Modifier mon prono</button>
+      }
+    }
+  </form>
+</article>
