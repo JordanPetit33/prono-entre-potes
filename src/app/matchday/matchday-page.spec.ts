@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { AppData, createEmptyAppData } from '../core/models/app-data';
 import { AppStore } from '../core/state/app-store';
 import { MatchdayPage } from './matchday-page';
@@ -35,7 +35,7 @@ describe('MatchdayPage', () => {
     it('affiche la journée et non l’écran d’accueil', async () => {
       TestBed.inject(AppStore).addPlayer('Karim');
       const el = await render();
-      expect(el.querySelector('h2')?.textContent?.trim()).toBe('Journée');
+      expect(el.querySelector('h2')?.textContent?.trim()).toBe('Journée 1');
       expect(el.textContent).not.toContain('Bienvenue');
     });
   });
@@ -79,6 +79,36 @@ describe('MatchdayPage', () => {
     it('les cartes montrent les pronostics du joueur actif', async () => {
       const el = await renderMatchday('2');
       expect(el.querySelector('[data-testid="prediction"]')?.textContent?.replace(/\s+/g, '')).toBe('2–2');
+    });
+
+    it('l’en-tête compte les pronostics du joueur actif sur la journée', async () => {
+      const count = (el: HTMLElement): string | undefined =>
+        el.querySelector('[data-testid="progress-count"]')?.textContent?.replace(/\s+/g, ' ').trim();
+      expect(count(await renderMatchday('2'))).toBe('1 / 1');
+    });
+
+    it('le compteur part de 0 sur une journée sans pronostic', async () => {
+      const el = await renderMatchday('1');
+      expect(el.querySelector('[data-testid="progress-count"]')?.textContent?.replace(/\s+/g, ' ').trim()).toBe(
+        '0 / 2',
+      );
+    });
+
+    it('« Journée suivante » mène à la journée suivante qui a des matchs', async () => {
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+      const el = await renderMatchday('1');
+      el.querySelector<HTMLButtonElement>('button[aria-label="Journée suivante"]')!.click();
+      expect(navigate).toHaveBeenCalledWith('/journee/2');
+    });
+
+    it('les flèches sont désactivées aux extrémités', async () => {
+      const first = await renderMatchday('1');
+      expect(first.querySelector<HTMLButtonElement>('button[aria-label="Journée précédente"]')?.disabled).toBe(true);
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({ providers: [provideRouter([])] });
+      const last = await renderMatchday('2');
+      expect(last.querySelector<HTMLButtonElement>('button[aria-label="Journée suivante"]')?.disabled).toBe(true);
+      expect(last.querySelector<HTMLButtonElement>('button[aria-label="Journée précédente"]')?.disabled).toBe(false);
     });
 
     it('sans match, invite à en ajouter dans l’écran Résultats', async () => {

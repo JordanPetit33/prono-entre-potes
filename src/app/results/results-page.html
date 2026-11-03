@@ -1,5 +1,10 @@
 <h2>Résultats</h2>
-<p class="subtitle">Journée {{ matchday() }}</p>
+<app-matchday-header
+  [matchday]="matchday()"
+  [previous]="matchday() > 1 ? matchday() - 1 : null"
+  [next]="matchday() + 1"
+  (navigate)="goTo($event)"
+/>
 
 @if (matches().length > 0) {
   <ul class="card list">

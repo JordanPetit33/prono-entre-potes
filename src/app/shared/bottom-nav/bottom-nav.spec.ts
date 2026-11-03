@@ -16,6 +16,7 @@ describe('BottomNav', () => {
         provideRouter([
           { path: 'journee', component: Host },
           { path: 'journee/:numero', component: Host },
+          { path: 'resultats', component: Host },
           { path: 'resultats/:numero', component: Host },
           { path: 'classement', component: Host },
         ]),
@@ -35,7 +36,7 @@ describe('BottomNav', () => {
 
   it('pointe vers les bonnes routes', async () => {
     await harness.navigateByUrl('/journee');
-    expect(links().map((a) => a.getAttribute('href'))).toEqual(['/journee', '/resultats/1', '/classement']);
+    expect(links().map((a) => a.getAttribute('href'))).toEqual(['/journee', '/resultats', '/classement']);
   });
 
   it('a un libellé accessible', async () => {
@@ -48,6 +49,7 @@ describe('BottomNav', () => {
     ['/journee', 'Journée'],
     ['/journee/3', 'Journée'],
     ['/resultats/1', 'Résultats'],
+    ['/resultats/3', 'Résultats'],
     ['/classement', 'Classement'],
   ])('sur "%s", seul le lien « %s » porte aria-current="page"', async (url, label) => {
     await harness.navigateByUrl(url);

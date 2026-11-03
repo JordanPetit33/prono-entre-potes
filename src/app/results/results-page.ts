@@ -1,21 +1,24 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { Id, Match } from '../core/models/app-data';
 import { matchesOfMatchday } from '../core/scoring/matches';
 import { AppStore } from '../core/state/app-store';
 import { toDatetimeLocal } from '../core/time/datetime-local';
 import { formatKickoff } from '../core/time/format-kickoff';
 import { MatchFieldErrors } from '../core/validation/match';
+import { MatchdayHeader } from '../matchday/matchday-header/matchday-header';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 
 /** Gestion des matchs d'une journée et saisie des résultats (F-70). */
 @Component({
   selector: 'app-results-page',
-  imports: [ConfirmDialog],
+  imports: [ConfirmDialog, MatchdayHeader],
   templateUrl: './results-page.html',
   styleUrl: './results-page.css',
 })
 export class ResultsPage {
   private readonly store = inject(AppStore);
+  private readonly router = inject(Router);
 
   /** Paramètre de route `:numero`. */
   readonly numero = input<string>();
@@ -68,6 +71,11 @@ export class ResultsPage {
       this.errors.set({});
       this.saveError.set(result.error);
     }
+  }
+
+  protected goTo(matchday: number): void {
+    this.cancelEdit();
+    void this.router.navigateByUrl(`/resultats/${matchday}`);
   }
 
   protected startEdit(match: Match): void {

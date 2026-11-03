@@ -1,6 +1,11 @@
 @if (hasPlayers()) {
-  <h2>Journée</h2>
-  <p class="subtitle">Journée {{ matchday() }}</p>
+  <app-matchday-header
+    [matchday]="matchday()"
+    [previous]="previous()"
+    [next]="next()"
+    [progress]="progress()"
+    (navigate)="goTo($event)"
+  />
 
   @if (matches().length > 0) {
     <div class="cards">

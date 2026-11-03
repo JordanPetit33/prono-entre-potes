@@ -160,13 +160,14 @@ Règles :
 
 | Route | Écran |
 |---|---|
-| `/` | redirige vers `/journee` |
-| `/journee` | journée par défaut (F-72) |
+| `/` | redirige vers `/journee/<journée par défaut>` (F-72) |
+| `/journee` | redirige vers `/journee/<journée par défaut>` (F-72) |
 | `/journee/:numero` | journée donnée |
+| `/resultats` | redirige vers `/resultats/<journée par défaut>` (F-72) |
 | `/resultats/:numero` | matchs et résultats d'une journée |
 | `/classement` | classement général |
 | `/joueurs` | gestion des joueurs |
-| toute autre route | redirige vers `/journee` |
+| toute autre route | redirige vers `/journee/<journée par défaut>` |
 
 ---
 

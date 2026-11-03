@@ -155,16 +155,16 @@ Pour chaque étape, la boucle est la même : envoyer le prompt, laisser l'agent 
 
 ## Étape 11 · Navigation entre journées et compteur
 
-- [ ] Tests de `defaultMatchday` écrits et en échec
-- [ ] Tests de `predictionProgress` écrits et en échec
-- [ ] Tests de l'en-tête de journée écrits et en échec (titre, flèches, extrémités, compteur)
-- [ ] Test de la redirection de `/journee` écrit et en échec
-- [ ] `defaultMatchday` et `predictionProgress`, fonctions pures
-- [ ] Composant `matchday/matchday-header/` avec barre de progression
-- [ ] `/journee` redirige vers la journée par défaut
-- [ ] Liens de la barre du bas mis à jour
-- [ ] `npm test` passe
-- [ ] `npm run build` compile
+- [x] Tests de `defaultMatchday` écrits et en échec
+- [x] Tests de `predictionProgress` écrits et en échec
+- [x] Tests de l'en-tête de journée écrits et en échec (titre, flèches, extrémités, compteur)
+- [x] Test de la redirection de `/journee` écrit et en échec
+- [x] `defaultMatchday` et `predictionProgress`, fonctions pures
+- [x] Composant `matchday/matchday-header/` avec barre de progression
+- [x] `/journee` redirige vers la journée par défaut
+- [x] Liens de la barre du bas mis à jour
+- [x] `npm test` passe
+- [x] `npm run build` compile
 - [ ] Vérifié avec `npm start` : flèches, compteur « x / y », journée par défaut
 - [ ] Commit
 

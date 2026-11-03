@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { createEmptyAppData } from '../core/models/app-data';
 import { AppStore } from '../core/state/app-store';
 import { DATA_KEY } from '../core/storage/storage-repository';
@@ -59,6 +60,35 @@ describe('ResultsPage', () => {
     await render('3');
     expect(el().querySelector('h2')?.textContent?.trim()).toBe('Résultats');
     expect(el().textContent).toContain('Journée 3');
+  });
+
+  describe('navigation entre journées', () => {
+    const arrow = (label: string): HTMLButtonElement => el().querySelector(`button[aria-label="${label}"]`)!;
+
+    it('« Journée précédente » est désactivée à la journée 1', async () => {
+      await render('1');
+      expect(arrow('Journée précédente').disabled).toBe(true);
+    });
+
+    it('« Journée suivante » reste possible même sans match, pour créer une nouvelle journée', async () => {
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+      await render('3');
+      expect(arrow('Journée suivante').disabled).toBe(false);
+      arrow('Journée suivante').click();
+      expect(navigate).toHaveBeenCalledWith('/resultats/4');
+    });
+
+    it('« Journée précédente » mène à la journée d’avant', async () => {
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+      await render('3');
+      arrow('Journée précédente').click();
+      expect(navigate).toHaveBeenCalledWith('/resultats/2');
+    });
+
+    it('n’affiche pas de compteur de pronostics', async () => {
+      await render('3');
+      expect(el().querySelector('[role="progressbar"]')).toBeNull();
+    });
   });
 
   it('liste les matchs de la journée demandée, dans l’ordre du coup d’envoi', async () => {

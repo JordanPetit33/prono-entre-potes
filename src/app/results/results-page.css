@@ -9,12 +9,6 @@ h2 {
   font-size: 24px;
 }
 
-.subtitle {
-  margin: 0;
-  color: var(--text-muted);
-  font-weight: 600;
-}
-
 h3 {
   margin: 0;
   font-size: 18px;
