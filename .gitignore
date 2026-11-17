@@ -39,6 +39,9 @@ testem.log
 /typings
 __screenshots__/
 
+# Bases de données locales : jamais dans le dépôt
+/data/
+
 # System files
 .DS_Store
 Thumbs.db

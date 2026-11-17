@@ -1,0 +1,9 @@
+2026-11-17 10:02:11 INFO  Démarrage, base postgres://prono_app:p@ss!W0rd@db.exemple.test:5432/prono
+2026-11-17 10:02:12 INFO  Connexion de heloise.lefevre@exemple.test
+2026-11-17 10:02:15 INFO  Paiement de la cotisation, IBAN FR76 3000 6000 0112 3456 7890 189, client Stripe sk_live_4eC39HqLyjWDarjtT1zdp7dc
+2026-11-17 10:02:16 WARN  Clé de test utilisée en recette : sk_test_51Hb2xKfAkePasVraimentUneCle
+2026-11-17 10:03:40 ERROR Échec de l'envoi à heloise.lefevre@exemple.test et à Zoe.Lefebvre@exemple.test
+2026-11-17 10:03:41 ERROR Repli sur Server=db2.exemple.test;Database=prono;User Id=sa;Password=Repli#2026;
+2026-11-17 10:03:42 ERROR Nouvelle tentative avec postgres://prono_app:p@ss!W0rd@db2.exemple.test/prono
+2026-11-17 10:03:43 ERROR Virement refusé vers DE89370400440532013000 (IBAN sans espaces)
+2026-11-17 10:04:00 INFO  Arrêt propre, 3 joueurs connectés

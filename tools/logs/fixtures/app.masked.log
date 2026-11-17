@@ -1,0 +1,9 @@
+2026-11-17 10:02:11 INFO  Démarrage, base postgres://<USER_1>:<PASSWORD_1>@db.exemple.test:5432/prono
+2026-11-17 10:02:12 INFO  Connexion de <EMAIL_1>
+2026-11-17 10:02:15 INFO  Paiement de la cotisation, IBAN <IBAN_1>, client Stripe <API_KEY_1>
+2026-11-17 10:02:16 WARN  Clé de test utilisée en recette : <API_KEY_2>
+2026-11-17 10:03:40 ERROR Échec de l'envoi à <EMAIL_1> et à <EMAIL_2>
+2026-11-17 10:03:41 ERROR Repli sur Server=db2.exemple.test;Database=prono;User Id=<USER_2>;Password=<PASSWORD_2>;
+2026-11-17 10:03:42 ERROR Nouvelle tentative avec postgres://<USER_1>:<PASSWORD_1>@db2.exemple.test/prono
+2026-11-17 10:03:43 ERROR Virement refusé vers <IBAN_2> (IBAN sans espaces)
+2026-11-17 10:04:00 INFO  Arrêt propre, 3 joueurs connectés

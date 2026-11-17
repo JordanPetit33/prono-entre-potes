@@ -19,6 +19,9 @@ Le périmètre actuel est une seule compétition, sans paris d'argent, sans réc
 - `npm start` : lancer le serveur de développement.
 - `npm test` : exécuter les tests Vitest via Angular CLI.
 - `npm run build` : compiler l'application.
+- `npm run test:tools` : exécuter les tests des outils de `tools/` (lanceur de tests de Node, sans dépendance). Voir `docs/securite-ia.md`.
+- `gitleaks git -v .` : chercher des secrets dans tout l'historique Git.
+- `git config core.hooksPath .githooks` : activer, une fois par clone, le hook `pre-commit` qui refuse un commit contenant un secret (gitleaks requis).
 - Ces scripts seront configurés dans `package.json` lors de la création du projet. Le dépôt n'étant pas encore initialisé en Angular, ils ne sont pas exécutables à ce stade.
 
 ## Conventions
@@ -34,5 +37,7 @@ Le périmètre actuel est une seule compétition, sans paris d'argent, sans réc
 
 - Ne jamais ajouter de dépendance sans demander l'accord de l'utilisateur.
 - Ne jamais écrire de secret (clé, mot de passe, jeton) dans le code ou dans le dépôt.
+- Ne jamais lire ni modifier les dumps et les données (`*.sql`, `*.dump`, `data/`). Ces règles sont imposées par `.claude/settings.json` ; ne pas chercher à les contourner.
+- Aucune commande shell n'est approuvée automatiquement dans ce projet : chacune demande l'accord de l'utilisateur, même si un réglage global l'autorise.
 - Ne jamais modifier un test dans le seul but de le faire passer ; corriger le comportement ou la règle de test avec justification.
 - Ne pas ajouter de paris d'argent, de récupération automatique des résultats, de comptes utilisateurs, de synchronisation en ligne ou de gestion de plusieurs compétitions sans demande explicite.

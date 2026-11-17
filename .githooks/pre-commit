@@ -1,0 +1,13 @@
+#!/bin/sh
+# Refuse le commit si gitleaks trouve un secret dans les fichiers indexés.
+# Activation, une fois par clone : git config core.hooksPath .githooks
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "pre-commit : gitleaks est introuvable. Installez-le (https://github.com/gitleaks/gitleaks) puis recommencez." >&2
+  exit 1
+fi
+
+if ! gitleaks git --pre-commit --staged --redact -v; then
+  echo "pre-commit : secret détecté, commit refusé. Retirez-le des fichiers indexés." >&2
+  exit 1
+fi

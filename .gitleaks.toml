@@ -1,0 +1,12 @@
+# Règles gitleaks du dépôt : les règles par défaut, plus une exception.
+[extend]
+useDefault = true
+
+# Faux secrets volontaires des tests du masquage de logs.
+# Exception limitée à ces deux fichiers : n'y mettez jamais de vraie valeur.
+[[allowlists]]
+description = "Faux secrets des tests du masquage de logs"
+paths = [
+  '''^tools/logs/fixtures/app\.log$''',
+  '''^tools/logs/mask-log\.spec\.ts$''',
+]

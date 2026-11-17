@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test --watch=false"
+    "test": "ng test --watch=false",
+    "test:tools": "node --disable-warning=ExperimentalWarning --test \"tools/**/*.spec.ts\""
   },
   "private": true,
   "packageManager": "npm@11.19.1",

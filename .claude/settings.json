@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "ask": [
+      "Bash",
+      "Bash(sqlite3 *)",
+      "Bash(psql *)",
+      "Bash(mysql *)"
+    ],
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/*.sql)",
+      "Read(**/*.dump)",
+      "Read(./data/**)",
+      "Edit(**/.env)",
+      "Edit(**/.env.*)",
+      "Edit(**/*.sql)",
+      "Edit(**/*.dump)",
+      "Edit(./data/**)",
+      "Bash(*.env*)",
+      "Bash(*.sql*)",
+      "Bash(*.dump*)",
+      "Bash(*data/*)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/run-tools-tests.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
