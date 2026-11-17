@@ -124,9 +124,12 @@
   @if (saveError(); as error) {
     <p class="error" role="alert">{{ error }}</p>
   }
+  @if (checkNotice(); as notice) {
+    <p class="notice" role="status" data-testid="duplicate-check-notice">{{ notice }}</p>
+  }
 
   <div class="form-actions">
-    <button type="submit" class="primary" [disabled]="readOnly()">
+    <button type="submit" class="primary" [disabled]="readOnly() || checking()">
       {{ editingId() ? 'Enregistrer' : 'Ajouter le match' }}
     </button>
     @if (editingId()) {
@@ -143,4 +146,12 @@
   confirmLabel="Supprimer"
   (confirmed)="confirmDelete()"
   (cancelled)="toDelete.set(null)"
+/>
+
+<app-confirm-dialog
+  [open]="duplicate() !== null"
+  [message]="duplicateMessage()"
+  confirmLabel="Ajouter quand même"
+  (confirmed)="confirmDuplicate()"
+  (cancelled)="duplicate.set(null)"
 />

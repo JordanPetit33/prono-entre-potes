@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { DUPLICATE_CHECK_LOG } from '../core/duplicates/duplicate-check';
+import { LANGUAGE_MODEL, LanguageModelRequest } from '../core/duplicates/language-model';
 import { createEmptyAppData } from '../core/models/app-data';
 import { AppStore } from '../core/state/app-store';
 import { DATA_KEY } from '../core/storage/storage-repository';
@@ -333,6 +335,136 @@ describe('ResultsPage', () => {
       await render();
       expect(field('home-team').disabled).toBe(true);
       expect(form().querySelector<HTMLButtonElement>('button[type="submit"]')?.disabled).toBe(true);
+    });
+  });
+
+  describe('signalement d’un match en double', () => {
+    let received: LanguageModelRequest[];
+    let answer: () => Promise<string>;
+
+    beforeEach(() => {
+      received = [];
+      answer = () => Promise.resolve('{"doublon": null}');
+      TestBed.configureTestingModule({
+        providers: [
+          {
+            provide: LANGUAGE_MODEL,
+            useValue: (request: LanguageModelRequest) => {
+              received.push(request);
+              return answer();
+            },
+          },
+          { provide: DUPLICATE_CHECK_LOG, useValue: () => undefined },
+        ],
+      });
+    });
+
+    const openDialog = (): HTMLDialogElement | null => el().querySelector('dialog[open]');
+
+    async function clickInDialog(label: string): Promise<void> {
+      const button = Array.from(openDialog()?.querySelectorAll('button') ?? []).find(
+        (b) => b.textContent?.trim() === label,
+      );
+      if (!button) throw new Error(`Bouton « ${label} » introuvable dans la boîte de dialogue`);
+      button.click();
+      await fixture.whenStable();
+    }
+
+    const notice = (): string | undefined =>
+      el().querySelector('[data-testid="duplicate-check-notice"]')?.textContent?.trim();
+
+    it('sans doublon, ajoute le match sans rien demander', async () => {
+      seed();
+      await render('1');
+      await fillAndSubmit('Lens', 'Brest', '15/11/2026', '17:00');
+      expect(openDialog()).toBeNull();
+      expect(listedMatches()).toContain('Lens – Brest');
+      expect(notice()).toBeUndefined();
+    });
+
+    it('risque 2 : avec un doublon signalé, n’ajoute le match qu’après « Ajouter quand même »', async () => {
+      answer = () => Promise.resolve('{"doublon": "1"}');
+      seed();
+      await render('1');
+      await fillAndSubmit('LOSC', 'OGC Nice', '15/11/2026', '17:00');
+
+      expect(openDialog()?.textContent).toContain('Ce match ressemble à Lille – Nice, déjà saisi pour cette journée.');
+      expect(store.matches()).toHaveLength(3);
+
+      await clickInDialog('Ajouter quand même');
+      expect(openDialog()).toBeNull();
+      expect(store.matches()).toHaveLength(4);
+      expect(listedMatches()).toContain('LOSC – OGC Nice');
+      expect(field('home-team').value).toBe('');
+    });
+
+    it('risque 2 : « Annuler » laisse les matchs inchangés', async () => {
+      answer = () => Promise.resolve('{"doublon": "1"}');
+      seed();
+      await render('1');
+      const before = store.matches();
+      await fillAndSubmit('LOSC', 'OGC Nice', '15/11/2026', '17:00');
+
+      await clickInDialog('Annuler');
+      expect(openDialog()).toBeNull();
+      expect(store.matches()).toEqual(before);
+      // La saisie reste là pour être corrigée.
+      expect(field('home-team').value).toBe('LOSC');
+    });
+
+    it('risque 3 : si la vérification est indisponible, le match est ajouté et le message s’affiche', async () => {
+      answer = () => Promise.reject(new Error('Ollama absent'));
+      seed();
+      await render('1');
+      await fillAndSubmit('Lens', 'Brest', '15/11/2026', '17:00');
+
+      expect(listedMatches()).toContain('Lens – Brest');
+      expect(notice()).toBe('Vérification des doublons indisponible.');
+    });
+
+    it('risque 4 : n’envoie au modèle ni nom de joueur, ni score, ni date', async () => {
+      store = TestBed.inject(AppStore);
+      store.replaceData({
+        ...createEmptyAppData(),
+        players: [{ id: 'p1', name: 'Héloïse', createdAt: '2026-11-01T10:00:00.000Z' }],
+        matches: [{ id: 'm1', matchday: 1, homeTeam: 'Lille', awayTeam: 'Nice', kickoff: '2026-11-15T14:00:00.000Z' }],
+        predictions: [
+          { playerId: 'p1', matchId: 'm1', score: { home: 3, away: 2 }, updatedAt: '2026-11-10T10:00:00.000Z' },
+        ],
+        results: [{ matchId: 'm1', score: { home: 1, away: 0 }, enteredAt: '2026-11-15T16:00:00.000Z' }],
+      });
+      await render('1');
+      await fillAndSubmit('Lens', 'Brest', '15/11/2026', '17:00');
+
+      expect(received).toHaveLength(1);
+      const [request] = received;
+      const sent = request.instructions + request.input;
+      for (const forbidden of ['Héloïse', 'p1', 'm1', '2026', 'score']) {
+        expect(sent).not.toContain(forbidden);
+      }
+      const data = JSON.parse(request.input.slice('<donnees>'.length, -'</donnees>'.length));
+      expect(data).toEqual({
+        nouveau: { domicile: 'Lens', exterieur: 'Brest' },
+        existants: [{ numero: '1', domicile: 'Lille', exterieur: 'Nice' }],
+      });
+    });
+
+    it('n’interroge pas le modèle quand la saisie est invalide', async () => {
+      seed();
+      await render('1');
+      await fillAndSubmit('Lyon', 'lyon', '15/11/2026', '17:00');
+      expect(received).toEqual([]);
+      expect(el().querySelector('#away-team-error')).not.toBeNull();
+    });
+
+    it('ne vérifie pas les doublons lors d’une modification', async () => {
+      seed();
+      await render('1');
+      await click('Modifier Lille – Nice');
+      await type('home-team', 'LOSC');
+      await submit();
+      expect(received).toEqual([]);
+      expect(listedMatches()).toContain('LOSC – Nice');
     });
   });
 });
